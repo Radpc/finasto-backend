@@ -7,6 +7,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { JwtModule as OriginalJwtModule } from '@nestjs/jwt';
 import { JwtModule } from './modules/jwt/jwt.module';
 import { UsersModule } from './modules/user/users.module';
+import { TagsModule } from './modules/tags/tags.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UsersModule } from './modules/user/users.module';
     PrismaModule,
     CategoriesModule,
     PaymentsModule,
+    TagsModule,
     UsersModule,
   ],
   controllers: [],
