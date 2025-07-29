@@ -16,6 +16,6 @@ export class UpdateCategoryController {
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    return this.categoriesService.execute(+id, updateCategoryDto);
+    return this.categoriesService.execute(id, updateCategoryDto);
   }
 }

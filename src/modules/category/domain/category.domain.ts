@@ -2,14 +2,14 @@ import { Category } from '@prisma/client';
 import { CategoryDTO } from '../dto/category.dto';
 
 interface IProps {
-  id: number;
+  id: string;
   label: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export class CategoryDomain {
-  id: number;
+  id: string;
   label: string;
   createdAt: Date;
   updatedAt: Date;

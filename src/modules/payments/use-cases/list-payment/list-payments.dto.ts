@@ -56,8 +56,8 @@ export class GetPaymentsParams {
 
   @IsOptional()
   @IsNumber()
-  @ApiProperty({ type: Number, example: 1, required: false })
-  categoryId?: number;
+  @ApiProperty({ type: String, required: false })
+  categoryId?: string;
 
   @IsOptional()
   @IsEnum(PaymentStatus)
@@ -78,15 +78,15 @@ export class GetPaymentsParams {
   searchBy?: string;
 
   @IsOptional()
-  @IsNumber({}, { each: true })
+  @IsString({ each: true })
   @Transform(({ value }) =>
-    Array.isArray(value) ? value.map(Number) : [Number(value)],
+    Array.isArray(value) ? value.map(String) : [String(value)],
   )
   @IsArray()
   @ApiProperty({
-    type: Number,
+    type: String,
     isArray: true,
     required: false,
   })
-  tagIds?: number[];
+  tagIds?: string[];
 }

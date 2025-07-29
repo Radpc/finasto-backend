@@ -12,7 +12,7 @@ export class CreatePaymentService {
     private tagRepository: TagRepoService,
   ) {}
 
-  async execute(createPaymentDTO: CreatePaymentDTO, requesterId: number) {
+  async execute(createPaymentDTO: CreatePaymentDTO, requesterId: string) {
     // Check category
     const category = await this.categoryRepository.getCategory({
       id: createPaymentDTO.categoryId,

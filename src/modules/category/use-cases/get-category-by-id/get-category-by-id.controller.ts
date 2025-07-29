@@ -18,7 +18,7 @@ export class GetCategoryByIdController {
   @ApiBearerAuth()
   @Get(':id')
   async handle(@Param('id') id: string) {
-    const category = await this.getCategory.execute(+id);
+    const category = await this.getCategory.execute(id);
 
     if (!category) throw new NotFoundException('Category not found');
 

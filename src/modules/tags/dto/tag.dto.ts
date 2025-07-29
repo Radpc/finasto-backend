@@ -1,12 +1,12 @@
 interface IProps {
-  id: number;
+  id: string;
   label: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export class TagDTO {
-  id: number;
+  id: string;
   label: string;
   createdAt: string;
   updatedAt: string;

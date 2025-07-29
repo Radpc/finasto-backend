@@ -8,7 +8,7 @@ export enum UserRole {
 }
 
 interface IProps {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: UserRole;
@@ -18,7 +18,7 @@ interface IProps {
 }
 
 export class UserDomain {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: UserRole;

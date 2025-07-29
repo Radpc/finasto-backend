@@ -5,7 +5,7 @@ import { CategoryRepoService } from 'src/database/repositories/category/category
 export class GetCategoryByIdService {
   constructor(private categoryRepository: CategoryRepoService) {}
 
-  execute(categoryId: number) {
+  execute(categoryId: string) {
     return this.categoryRepository.getCategory({ id: categoryId });
   }
 }

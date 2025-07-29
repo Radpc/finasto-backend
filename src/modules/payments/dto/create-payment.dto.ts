@@ -24,8 +24,8 @@ export class CreatePaymentDTO {
 
   @IsNotEmpty()
   @IsNumber()
-  @ApiProperty({ type: Number, example: 1 })
-  categoryId: number;
+  @ApiProperty({ type: String, example: 1 })
+  categoryId: string;
 
   @IsOptional()
   @IsString()
@@ -54,10 +54,10 @@ export class CreatePaymentDTO {
   )
   @IsArray()
   @ApiProperty({
-    type: Number,
+    type: String,
     isArray: true,
-    example: '[1, 2]',
+    example: '[]',
     required: false,
   })
-  tagIds?: number[];
+  tagIds?: string[];
 }

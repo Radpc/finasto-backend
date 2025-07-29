@@ -6,7 +6,7 @@ async function main() {
   hashSync;
 
   await prisma.user.upsert({
-    where: { id: 1 },
+    where: { email: 'admin@email.com' },
     update: {
       name: 'Admin',
       email: 'admin@email.com',
@@ -18,22 +18,6 @@ async function main() {
       email: 'admin@email.com',
       password: hashSync('12345'),
       role: 'admin',
-    },
-  });
-
-  await prisma.category.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      label: 'Energia',
-    },
-  });
-
-  await prisma.category.upsert({
-    where: { id: 2 },
-    update: {},
-    create: {
-      label: 'Aluguél',
     },
   });
 }

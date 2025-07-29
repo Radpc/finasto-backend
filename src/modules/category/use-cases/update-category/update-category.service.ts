@@ -6,7 +6,7 @@ import { CategoryRepoService } from 'src/database/repositories/category/category
 export class UpdateCategoryService {
   constructor(private categoryRepository: CategoryRepoService) {}
 
-  execute(id: number, updateCategoryDto: UpdateCategoryDto) {
+  execute(id: string, updateCategoryDto: UpdateCategoryDto) {
     return this.categoryRepository.updateCategory({
       data: updateCategoryDto,
       where: { id },

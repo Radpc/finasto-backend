@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentRepoService } from 'src/database/repositories/payment/payment-repo.service';
 import { GetPaymentsParams } from './list-payments.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ListPaymentsService {
@@ -15,7 +16,7 @@ export class ListPaymentsService {
         categoryId: query.categoryId,
         status: query.status,
         tags: query.tagIds ? { some: { id: { in: query.tagIds } } } : undefined,
-        createdAt: {
+        paymentDate: {
           gte: query.since ? new Date(query.since) : undefined,
           lte: query.until ? new Date(query.until) : undefined,
         },
@@ -32,6 +33,7 @@ export class ListPaymentsService {
       },
       skip,
       take,
+      orderBy: { paymentDate: Prisma.SortOrder.desc },
     });
 
     return res;

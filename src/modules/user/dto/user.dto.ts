@@ -1,7 +1,7 @@
 import { UserRole } from '../domain/user.domain';
 
 interface IProps {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: UserRole;
@@ -10,7 +10,7 @@ interface IProps {
 }
 
 export class UserDTO {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: UserRole;

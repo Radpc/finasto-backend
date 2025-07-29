@@ -14,7 +14,7 @@ generator client {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
+  id       String @id @default(uuid())
   name     String
   email    String @unique
   password String
@@ -28,7 +28,7 @@ model User {
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
+  id    String @id @default(uuid())
   label String
 
   payments  Payment[]
@@ -37,7 +37,7 @@ model Category {
 }
 
 model Tag {
-  id    Int    @id @default(autoincrement())
+  id    String @id @default(uuid())
   label String
 
   payments  Payment[]
@@ -46,7 +46,7 @@ model Tag {
 }
 
 model Payment {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(uuid())
   description   String
   value         Float
   observation   String?
@@ -54,28 +54,28 @@ model Payment {
   paymentMethod String
   paymentDate   DateTime @default(now())
 
-  createdBy User @relation(fields: [userId], references: [id])
-  userId    Int
+  createdBy User   @relation(fields: [userId], references: [id])
+  userId    String
 
   category   Category @relation(fields: [categoryId], references: [id])
-  categoryId Int
+  categoryId String
   tags       Tag[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   recurringPayment   RecurringPayment? @relation(fields: [recurringPaymentId], references: [id])
-  recurringPaymentId Int?
+  recurringPaymentId String?
 }
 
 model RecurringPayment {
-  id                   Int     @id @default(autoincrement())
+  id                   String  @id @default(uuid())
   totalValue           Float?
   numberOfInstallments Int?
   automaticPayment     Boolean
   singlePaymentValue   Float
 
-  createdBy User @relation(fields: [userId], references: [id])
-  userId    Int
+  createdBy User   @relation(fields: [userId], references: [id])
+  userId    String
 
   dayOfMonth Int
 

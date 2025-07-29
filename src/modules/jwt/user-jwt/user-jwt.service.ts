@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { UserRole } from 'src/modules/user/domain/user.domain';
 
 export type JwtUserPayload = {
-  userId: number;
+  userId: string;
   role: UserRole;
 };
 

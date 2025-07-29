@@ -2,7 +2,7 @@ import { Tag } from '@prisma/client';
 import { TagDTO } from '../dto/tag.dto';
 
 interface IProps {
-  id: number;
+  id: string;
   label: string;
   createdAt: Date;
   updatedAt: Date;
@@ -11,7 +11,7 @@ interface IProps {
 type TagWithIncludes = Tag & {};
 
 export class TagDomain {
-  id: number;
+  id: string;
   label: string;
   createdAt: Date;
   updatedAt: Date;

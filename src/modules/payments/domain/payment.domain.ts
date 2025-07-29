@@ -15,7 +15,7 @@ export enum PaymentMethod {
 }
 
 interface IProps {
-  id: number;
+  id: string;
   description: string;
   value: number;
   observation?: string;
@@ -35,7 +35,7 @@ type PaymentWithIncludes = Payment & {
 };
 
 export class PaymentDomain {
-  id: number;
+  id: string;
   description: string;
   value: number;
   observation?: string;

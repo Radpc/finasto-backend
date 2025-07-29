@@ -3,7 +3,7 @@ import { PaymentMethod, PaymentStatus } from '../domain/payment.domain';
 import { TagDTO } from 'src/modules/tags/dto/tag.dto';
 
 interface IProps {
-  id: number;
+  id: string;
   description: string;
   value: number;
   observation?: string;
@@ -18,7 +18,7 @@ interface IProps {
 }
 
 export class PaymentDTO {
-  id: number;
+  id: string;
   description: string;
   value: number;
   observation?: string;
