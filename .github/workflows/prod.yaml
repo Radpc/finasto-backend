@@ -32,6 +32,10 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
+
+      - name: View EC2 PRIVATE KEY
+        run: echo "${{secrets.EC2_PRIVATE_KEY}}" > private_key.pem && cat private_key.pem
+
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} 'if sudo docker ps -q --filter "status=running" | grep -q .; then sudo docker stop $(sudo docker ps -q --filter "status=running"); fi && if sudo docker ps -a -q | grep -q .; then sudo docker rm $(sudo docker ps -a -q); fi && sudo docker pull radpc/financeio-backend && sudo docker run -p 3000:3000 -d radpc/financeio-backend && sudo docker image prune -f'
