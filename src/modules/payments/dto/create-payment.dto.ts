@@ -23,7 +23,7 @@ export class CreatePaymentDTO {
   value: number;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @ApiProperty({ type: String, example: 1 })
   categoryId: string;
 
