@@ -20,10 +20,10 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build Docker Image
-        run: docker build -t radpc/phone-backend .
+        run: docker build -t radpc/financeio-backend .
 
       - name: Push Docker Image
-        run: docker push radpc/phone-backend
+        run: docker push radpc/financeio-backend
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -34,4 +34,4 @@ jobs:
           ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} 'if sudo docker ps -q --filter "status=running" | grep -q .; then sudo docker stop $(sudo docker ps -q --filter "status=running"); fi && if sudo docker ps -a -q | grep -q .; then sudo docker rm $(sudo docker ps -a -q); fi && sudo docker pull radpc/phone-backend && sudo docker run -p 3000:3000 -d radpc/phone-backend && sudo docker image prune -f'
+          ssh -o StrictHostKeyChecking=no ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} 'if sudo docker ps -q --filter "status=running" | grep -q .; then sudo docker stop $(sudo docker ps -q --filter "status=running"); fi && if sudo docker ps -a -q | grep -q .; then sudo docker rm $(sudo docker ps -a -q); fi && sudo docker pull radpc/financeio-backend && sudo docker run -p 3000:3000 -d radpc/financeio-backend && sudo docker image prune -f'
