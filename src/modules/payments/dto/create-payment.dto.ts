@@ -48,10 +48,7 @@ export class CreatePaymentDTO {
   paymentDate: string;
 
   @IsOptional()
-  @IsNumber({}, { each: true })
-  @Transform(({ value }) =>
-    Array.isArray(value) ? value.map(Number) : [Number(value)],
-  )
+  @IsString({ each: true })
   @IsArray()
   @ApiProperty({
     type: String,
