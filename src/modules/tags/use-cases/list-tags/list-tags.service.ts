@@ -5,6 +5,7 @@ import { ListTagsQuery } from './list-tags.dto';
 
 type Input = {
   query: ListTagsQuery;
+  requesterId: string;
 };
 type Output = {
   data: TagDomain[];
@@ -24,6 +25,7 @@ export class ListTagsService {
       take,
       skip,
       where: {
+        family: { users: { some: { id: input.requesterId } } },
         label: input.query.searchBy
           ? { contains: input.query.searchBy }
           : undefined,

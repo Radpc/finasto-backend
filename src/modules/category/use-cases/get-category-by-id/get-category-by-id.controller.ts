@@ -3,11 +3,12 @@ import {
   Get,
   NotFoundException,
   Param,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetCategoryByIdService } from './get-category-by-id.service';
-import { UserGuard } from 'src/modules/jwt/user-jwt/user.guard';
+import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
 
 @Controller('categories')
 @ApiTags('Category')
@@ -17,8 +18,11 @@ export class GetCategoryByIdController {
   @UseGuards(UserGuard)
   @ApiBearerAuth()
   @Get(':id')
-  async handle(@Param('id') id: string) {
-    const category = await this.getCategory.execute(id);
+  async handle(@Param('id') id: string, @Req() req: UserRequest) {
+    const { data: category } = await this.getCategory.execute({
+      categoryId: id,
+      requesterId: req.jwtPayload.userId,
+    });
 
     if (!category) throw new NotFoundException('Category not found');
 

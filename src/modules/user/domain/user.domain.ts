@@ -3,8 +3,8 @@ import { User } from '@prisma/client';
 import { UserDTO } from '../dto/user.dto';
 
 export enum UserRole {
-  Admin = 'admin',
-  Operator = 'operator',
+  FamilyHead = 'familyHead',
+  FamilyMember = 'familyMember',
 }
 
 interface IProps {

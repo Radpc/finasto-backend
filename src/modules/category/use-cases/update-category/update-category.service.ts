@@ -2,14 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { UpdateCategoryDto } from '../../dto/update-category.dto';
 import { CategoryRepoService } from 'src/database/repositories/category/category-repo.service';
 
+type Input = {
+  requesterId: string;
+  categoryId: string;
+  payload: UpdateCategoryDto;
+};
+type Output = {};
+
 @Injectable()
 export class UpdateCategoryService {
   constructor(private categoryRepository: CategoryRepoService) {}
 
-  execute(id: string, updateCategoryDto: UpdateCategoryDto) {
+  async execute(input: Input): Promise<Output> {
     return this.categoryRepository.updateCategory({
-      data: updateCategoryDto,
-      where: { id },
+      data: input.payload,
+      where: {
+        id: input.categoryId,
+        family: { users: { some: { id: input.requesterId } } },
+      },
     });
   }
 }

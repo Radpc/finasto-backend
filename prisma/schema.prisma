@@ -25,11 +25,41 @@ model User {
 
   payments          Payment[]
   recurringPayments RecurringPayment[]
+
+  families Family[]
+}
+
+model Family {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users      User[]
+  tags       Tag[]
+  categories Category[]
+  accounts   Account[]
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  family   Family    @relation(fields: [familyId], references: [id])
+  familyId String
+  payments Payment[]
+
+  recurringPayment RecurringPayment[]
 }
 
 model Category {
   id    String @id @default(uuid())
   label String
+
+  family   Family @relation(fields: [familyId], references: [id])
+  familyId String
 
   payments  Payment[]
   createdAt DateTime  @default(now())
@@ -37,12 +67,14 @@ model Category {
 }
 
 model Tag {
-  id    String @id @default(uuid())
-  label String
+  id        String   @id @default(uuid())
+  label     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  payments  Payment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  payments Payment[]
+  family   Family    @relation(fields: [familyId], references: [id])
+  familyId String
 }
 
 model Payment {
@@ -53,6 +85,11 @@ model Payment {
   status        String
   paymentMethod String
   paymentDate   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId String
 
   createdBy User   @relation(fields: [userId], references: [id])
   userId    String
@@ -60,24 +97,27 @@ model Payment {
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
   tags       Tag[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
 
   recurringPayment   RecurringPayment? @relation(fields: [recurringPaymentId], references: [id])
   recurringPaymentId String?
 }
 
 model RecurringPayment {
-  id                   String  @id @default(uuid())
+  id                   String   @id @default(uuid())
   totalValue           Float?
   numberOfInstallments Int?
   automaticPayment     Boolean
   singlePaymentValue   Float
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   createdBy User   @relation(fields: [userId], references: [id])
   userId    String
 
   dayOfMonth Int
+
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId String
 
   payments Payment[]
 }

@@ -1,18 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentRepoService } from 'src/database/repositories/payment/payment-repo.service';
-import { GetPaymentsParams } from './list-payments.dto';
+import { ListPaymentsQuery } from './list-payments.dto';
 import { Prisma } from '@prisma/client';
+import { PaymentDomain } from '../../domain/payment.domain';
+import { PaginatedList } from 'src/types/utils';
+
+type Input = {
+  query: ListPaymentsQuery;
+  requesterId: string;
+};
+type Output = PaginatedList<PaymentDomain>;
 
 @Injectable()
 export class ListPaymentsService {
   constructor(private paymentRepository: PaymentRepoService) {}
 
-  async execute(query: GetPaymentsParams) {
+  async execute({ query, requesterId }: Input): Promise<Output> {
     const take = query.pageSize;
     const skip = take * (query.page - 1);
 
     const res = await this.paymentRepository.getPayments({
       where: {
+        account: {
+          id: query.accountId,
+          family: { users: { some: { id: requesterId } } },
+        },
         categoryId: query.categoryId,
         status: query.status,
         tags: query.tagIds ? { some: { id: { in: query.tagIds } } } : undefined,

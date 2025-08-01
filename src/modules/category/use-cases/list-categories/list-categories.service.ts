@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CategoryRepoService } from 'src/database/repositories/category/category-repo.service';
+import { CategoryDomain } from '../../domain/category.domain';
+import { PaginatedList } from 'src/types/utils';
 
 type FindAllInput = {
   page: number;
@@ -7,18 +9,35 @@ type FindAllInput = {
   label?: string;
 };
 
+type Input = {
+  query: FindAllInput;
+  requesterId: string;
+};
+type Output = {
+  data: PaginatedList<CategoryDomain>;
+  message: 'Success';
+};
+
 @Injectable()
 export class ListCategoriesService {
   constructor(private categoryRepository: CategoryRepoService) {}
 
-  execute(query: FindAllInput) {
+  async execute({ query, requesterId }: Input): Promise<Output> {
     const take = query.pageSize;
     const skip = take * (query.page - 1);
 
-    return this.categoryRepository.categories({
-      where: query.label ? { label: { contains: query.label } } : undefined,
+    const result = await this.categoryRepository.categories({
+      where: {
+        family: { users: { some: { id: requesterId } } },
+        label: query.label ? { contains: query.label } : undefined,
+      },
       skip,
       take,
     });
+
+    return {
+      data: result,
+      message: 'Success',
+    };
   }
 }

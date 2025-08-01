@@ -4,6 +4,7 @@ import { PaymentDomain } from '../../domain/payment.domain';
 
 type Input = {
   paymentId: string;
+  requesterId: string;
 };
 type Output = PaymentDomain;
 
@@ -14,6 +15,7 @@ export class RemovePaymentService {
   async execute(input: Input): Promise<Output> {
     const deletedPayment = await this.paymentRepository.deletePayment({
       id: input.paymentId,
+      account: { family: { users: { some: { id: input.requesterId } } } },
     });
 
     return deletedPayment;

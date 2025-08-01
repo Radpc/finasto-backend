@@ -17,10 +17,10 @@ export class CreatePaymentController {
     @Body() createPaymentDto: CreatePaymentDTO,
   ) {
     const requesterId = request.jwtPayload.userId;
-    const res = await this.createPaymentService.execute(
-      createPaymentDto,
+    const res = await this.createPaymentService.execute({
+      payload: createPaymentDto,
       requesterId,
-    );
-    return { data: res, message: 'Payment created' };
+    });
+    return { data: res.data.toDTO(), message: 'Payment created' };
   }
 }

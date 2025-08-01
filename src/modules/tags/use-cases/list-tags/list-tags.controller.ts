@@ -1,6 +1,6 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserGuard } from 'src/modules/jwt/user-jwt/user.guard';
+import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
 import { TagDTO } from '../../dto/tag.dto';
 import { ListTagsService } from './list-tags.service';
@@ -16,8 +16,12 @@ export class ListTagsController {
   @Get()
   async handle(
     @Query() query: ListTagsQuery,
+    @Req() req: UserRequest,
   ): ControllerResponse<PaginatedResponse<TagDTO>> {
-    const result = await this.listTagsService.execute({ query: query });
+    const result = await this.listTagsService.execute({
+      query,
+      requesterId: req.jwtPayload.userId,
+    });
     return {
       message: 'Success',
       data: {

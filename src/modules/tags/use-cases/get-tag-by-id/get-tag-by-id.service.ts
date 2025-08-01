@@ -4,6 +4,7 @@ import { TagDomain } from '../../domain/tag.domain';
 
 type Input = {
   tagId: string;
+  requesterId: string;
 };
 type Output = {
   data: TagDomain;
@@ -17,6 +18,7 @@ export class GetTagByIdService {
   async execute(input: Input): Promise<Output> {
     const newTag = await this.tagRepository.getTag({
       id: input.tagId,
+      family: { users: { some: { id: input.requesterId } } },
     });
 
     if (!newTag) throw new NotFoundException();

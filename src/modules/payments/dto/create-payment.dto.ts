@@ -7,11 +7,15 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import { PaymentMethod, PaymentStatus } from '../domain/payment.domain';
-import { Transform } from 'class-transformer';
 
 export class CreatePaymentDTO {
+  @IsUUID()
+  @ApiProperty()
+  accountId: string;
+
   @IsNotEmpty()
   @IsString()
   @ApiProperty({ type: String, example: 'Compras' })

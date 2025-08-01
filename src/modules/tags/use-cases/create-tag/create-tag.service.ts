@@ -5,6 +5,7 @@ import { TagDomain } from '../../domain/tag.domain';
 
 type Input = {
   createTagDTO: CreateTagDTO;
+  requesterId: string;
 };
 type Output = {
   data: TagDomain;
@@ -18,6 +19,12 @@ export class CreateTagService {
   async execute(input: Input): Promise<Output> {
     const newTag = await this.tagRepository.createTag({
       label: input.createTagDTO.label,
+      family: {
+        connect: {
+          id: input.createTagDTO.familyId,
+          users: { some: { id: input.requesterId } },
+        },
+      },
     });
 
     return { data: newTag, message: 'Success' };

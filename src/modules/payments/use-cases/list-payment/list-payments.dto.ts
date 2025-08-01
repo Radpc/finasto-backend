@@ -10,20 +10,9 @@ import {
   IsString,
 } from 'class-validator';
 import { PaymentStatus } from '../../domain/payment.domain';
+import { PaginatedQuery } from 'src/types/paginated-dto';
 
-export class GetPaymentsParams {
-  @IsNotEmpty()
-  @Type(() => Number)
-  @IsNumber()
-  @ApiProperty({ type: Number, example: 1, required: true })
-  page: number;
-
-  @IsNotEmpty()
-  @Type(() => Number)
-  @IsNumber()
-  @ApiProperty({ type: Number, example: 1, required: true })
-  pageSize: number;
-
+export class ListPaymentsQuery extends PaginatedQuery {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
@@ -89,4 +78,14 @@ export class GetPaymentsParams {
     required: false,
   })
   tagIds?: string[];
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  familyId?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  accountId?: string;
 }

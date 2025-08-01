@@ -1,9 +1,9 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ListCategoriesService } from './list-categories.service';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { UserGuard } from 'src/modules/jwt/user-jwt/user.guard';
+import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
 import { CategoryDTO } from '../../dto/category.dto';
 
@@ -36,17 +36,23 @@ export class ListCategoriesController {
   @UseGuards(UserGuard)
   @ApiBearerAuth()
   @Get()
-  async handle(@Query() query: GetCategoriesParams): IResponse {
+  async handle(
+    @Query() query: GetCategoriesParams,
+    @Req() req: UserRequest,
+  ): IResponse {
     const result = await this.listCategoriesService.execute({
-      page: query.page,
-      pageSize: query.pageSize,
-      label: query.label,
+      query: {
+        page: query.page,
+        pageSize: query.pageSize,
+        label: query.label,
+      },
+      requesterId: req.jwtPayload.userId,
     });
 
     return {
       data: {
-        items: result.data.map((c) => c.toDTO()),
-        pagination: { page: query.page, total: result.total },
+        items: result.data.data.map((c) => c.toDTO()),
+        pagination: { page: query.page, total: result.data.total },
       },
       message: 'Success',
     };
