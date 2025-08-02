@@ -2,18 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import { Prisma } from '@prisma/client';
 import { UserDomain } from 'src/modules/user/domain/user.domain';
+import { DefaultArgs } from '@prisma/client/runtime/library';
 
+type GetUniqueInput = {
+  select?: Prisma.UserSelect<DefaultArgs> | null | undefined;
+  include?: Prisma.UserInclude<DefaultArgs> | null | undefined;
+  where: Prisma.UserWhereUniqueInput;
+};
 @Injectable()
 export class UserRepoService {
   constructor(private prisma: PrismaService) {}
 
-  async getUser(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-  ): Promise<UserDomain | null> {
-    const raw = await this.prisma.user.findUnique({
-      where: userWhereUniqueInput,
-    });
-
+  async getUser(options: GetUniqueInput): Promise<UserDomain | null> {
+    const raw = await this.prisma.user.findUnique(options);
     return raw ? UserDomain.fromRaw(raw) : null;
   }
 

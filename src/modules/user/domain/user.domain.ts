@@ -1,6 +1,7 @@
 import { compare } from 'bcryptjs';
-import { User } from '@prisma/client';
+import { Family, User } from '@prisma/client';
 import { UserDTO } from '../dto/user.dto';
+import { FamilyDomain } from 'src/modules/family/domain/family.domain';
 
 export enum UserRole {
   FamilyHead = 'familyHead',
@@ -15,7 +16,13 @@ interface IProps {
   password: string;
   createdAt: Date;
   updatedAt: Date;
+
+  families?: FamilyDomain[];
 }
+
+type UserWithIncludes = User & {
+  families?: Family[];
+};
 
 export class UserDomain {
   id: string;
@@ -26,6 +33,8 @@ export class UserDomain {
   createdAt: Date;
   updatedAt: Date;
 
+  families?: FamilyDomain[];
+
   constructor(props: IProps) {
     this.id = props.id;
     this.name = props.name;
@@ -34,9 +43,11 @@ export class UserDomain {
     this.password = props.password;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
+
+    this.families = props.families;
   }
 
-  static fromRaw(rawUser: User) {
+  static fromRaw(rawUser: UserWithIncludes) {
     return new UserDomain({
       id: rawUser.id,
       name: rawUser.name,
@@ -45,6 +56,9 @@ export class UserDomain {
       password: rawUser.password,
       createdAt: rawUser.createdAt,
       updatedAt: rawUser.updatedAt,
+      families: rawUser.families
+        ? rawUser.families.map(FamilyDomain.fromRaw)
+        : undefined,
     });
   }
 
@@ -60,6 +74,8 @@ export class UserDomain {
       role: this.role,
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
+
+      families: this.families?.map((f)=>f.toDTO());
     });
   }
 }

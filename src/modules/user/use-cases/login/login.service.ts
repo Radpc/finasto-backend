@@ -13,7 +13,10 @@ export class LoginService {
   ) {}
 
   async execute(email: string, password: string) {
-    const user = await this.userRepositoryService.getUser({ email });
+    const user = await this.userRepositoryService.getUser({
+      where: { email },
+      include: { families: true },
+    });
 
     if (!user || !(await user.isPasswordValid(password)))
       throw new ForbiddenException('Invalid email and/or password');
@@ -22,7 +25,7 @@ export class LoginService {
       userId: user.id,
       role: user.role,
     };
-    const jwt = await this.jwtService.encode(jwtPayload);
+    const jwt = await this.jwtService.encodeJWT(jwtPayload);
     return { jwt, user: user.toDTO() };
   }
 }

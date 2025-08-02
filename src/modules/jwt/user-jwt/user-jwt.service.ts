@@ -40,7 +40,7 @@ export class UserJwtService {
     }
   }
 
-  async encode(payload: JwtUserPayload) {
+  async encodeJWT(payload: JwtUserPayload) {
     return this.jwtService.sign(payload, {
       secret: this.jwtSecret,
       expiresIn: '1d',
