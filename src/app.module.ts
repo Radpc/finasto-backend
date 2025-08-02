@@ -8,6 +8,8 @@ import { JwtModule as OriginalJwtModule } from '@nestjs/jwt';
 import { JwtModule } from './modules/jwt/jwt.module';
 import { UsersModule } from './modules/user/users.module';
 import { TagsModule } from './modules/tags/tags.module';
+import { AccountModule } from './modules/account/account.module';
+import { FamilyModule } from './modules/family/family.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { TagsModule } from './modules/tags/tags.module';
     PaymentsModule,
     TagsModule,
     UsersModule,
+    AccountModule,
+    FamilyModule,
   ],
   controllers: [],
   providers: [AppService],

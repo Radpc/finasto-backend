@@ -10,7 +10,7 @@ import { UpdateAccountService } from './update-account.service';
 @ApiBearerAuth()
 @Controller('accounts')
 @ApiTags('Account')
-export class CreateAccountController {
+export class UpdateAccountController {
   constructor(private readonly updateAccountService: UpdateAccountService) {}
 
   @Put(':accountId')

@@ -9,7 +9,7 @@ import { GetFamilyByIdService } from './get-family-by-id.service';
 @ApiBearerAuth()
 @Controller('families')
 @ApiTags('Family')
-export class CreateFamilyController {
+export class GetFamilyByIdController {
   constructor(private readonly getFamilyByIdService: GetFamilyByIdService) {}
 
   @Get(':familyId')
