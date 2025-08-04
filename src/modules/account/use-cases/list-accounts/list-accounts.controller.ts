@@ -1,4 +1,4 @@
-import { Controller, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
@@ -13,7 +13,7 @@ import { ListAccountsService } from './list-accounts.service';
 export class ListAccountController {
   constructor(private readonly listAccountsService: ListAccountsService) {}
 
-  @Post()
+  @Get()
   async handle(
     @Query() listAccountQuery: ListAccountsQuery,
     @Req() req: UserRequest,
