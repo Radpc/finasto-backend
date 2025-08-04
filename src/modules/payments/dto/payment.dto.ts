@@ -1,6 +1,7 @@
 import { CategoryDTO } from 'src/modules/category/dto/category.dto';
 import { PaymentMethod, PaymentStatus } from '../domain/payment.domain';
 import { TagDTO } from 'src/modules/tags/dto/tag.dto';
+import { AccountDTO } from 'src/modules/account/dto/account.dto';
 
 interface IProps {
   id: string;
@@ -13,6 +14,7 @@ interface IProps {
   createdAt: string;
   updatedAt: string;
 
+  account?: AccountDTO;
   category?: CategoryDTO;
   tags?: TagDTO[];
 }
@@ -28,6 +30,7 @@ export class PaymentDTO {
   createdAt: string;
   updatedAt: string;
 
+  account?: AccountDTO;
   category?: CategoryDTO;
   tags?: TagDTO[];
 
@@ -42,6 +45,7 @@ export class PaymentDTO {
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
 
+    this.account = props.account;
     this.category = props.category;
     this.tags = props.tags;
   }

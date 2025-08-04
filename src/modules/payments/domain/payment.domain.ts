@@ -1,7 +1,8 @@
-import { Category, Payment, Tag } from '@prisma/client';
+import { Account, Category, Payment, Tag } from '@prisma/client';
 import { CategoryDomain } from 'src/modules/category/domain/category.domain';
 import { TagDomain } from 'src/modules/tags/domain/tag.domain';
 import { PaymentDTO } from '../dto/payment.dto';
+import { AccountDomain } from 'src/modules/account/domain/account.domain';
 
 export enum PaymentStatus {
   Paid = 'Paid',
@@ -25,11 +26,13 @@ interface IProps {
   createdAt: Date;
   updatedAt: Date;
 
+  account?: AccountDomain;
   category?: CategoryDomain;
   tags?: TagDomain[];
 }
 
 type PaymentWithIncludes = Payment & {
+  account?: Account;
   category?: Category;
   tags?: Tag[];
 };
@@ -45,6 +48,7 @@ export class PaymentDomain {
   createdAt: Date;
   updatedAt: Date;
 
+  account?: AccountDomain;
   category?: CategoryDomain;
   tags?: TagDomain[];
 
@@ -59,6 +63,7 @@ export class PaymentDomain {
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
 
+    this.account = props.account;
     this.category = props.category;
     this.tags = props.tags;
   }
@@ -74,6 +79,9 @@ export class PaymentDomain {
       paymentDate: paymentRaw.paymentDate,
       createdAt: paymentRaw.createdAt,
       updatedAt: paymentRaw.updatedAt,
+      account: paymentRaw.account
+        ? AccountDomain.fromRaw(paymentRaw.account)
+        : undefined,
       category: paymentRaw.category
         ? CategoryDomain.fromRaw(paymentRaw.category)
         : undefined,
@@ -93,6 +101,7 @@ export class PaymentDomain {
       paymentDate: this.paymentDate.toISOString(),
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
+      account: this.account?.toDTO(),
       category: this.category?.toDTO(),
       tags: this.tags?.map((t) => t.toDTO()),
     });
