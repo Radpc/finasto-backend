@@ -46,6 +46,7 @@ export class ListPaymentsService {
       skip,
       take,
       orderBy: { paymentDate: Prisma.SortOrder.desc },
+      include: { category: true, tags: true, account: true },
     });
 
     return res;

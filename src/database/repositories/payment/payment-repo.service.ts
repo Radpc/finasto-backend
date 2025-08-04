@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma.service';
 import { Prisma } from '@prisma/client';
 import { PaymentDomain } from 'src/modules/payments/domain/payment.domain';
 import { PaginatedList } from 'src/types/utils';
+import { DefaultArgs } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PaymentRepoService {
@@ -24,8 +25,9 @@ export class PaymentRepoService {
     cursor?: Prisma.PaymentWhereUniqueInput;
     where?: Prisma.PaymentWhereInput;
     orderBy?: Prisma.PaymentOrderByWithRelationInput;
+    include?: Prisma.PaymentInclude<DefaultArgs>;
   }): Promise<PaginatedList<PaymentDomain>> {
-    const { skip, take, cursor, where, orderBy } = params;
+    const { skip, take, cursor, where, orderBy, include } = params;
 
     const query = {
       skip,
@@ -33,7 +35,7 @@ export class PaymentRepoService {
       cursor,
       where,
       orderBy,
-      include: { category: true, tags: true, _count: true },
+      include,
     } satisfies Prisma.PaymentFindManyArgs;
 
     const [raws, count] = await this.prisma.$transaction([
