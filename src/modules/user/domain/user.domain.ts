@@ -75,7 +75,7 @@ export class UserDomain {
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
 
-      families: this.families?.map((f)=>f.toDTO());
+      families: this.families?.map((f) => f.toDTO()),
     });
   }
 }
