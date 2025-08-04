@@ -23,7 +23,7 @@ export class GetCategoriesParams {
   @IsString()
   @IsOptional()
   @ApiProperty({ type: String, example: 'Exemplo', required: false })
-  label?: string;
+  searchBy?: string;
 }
 
 type IResponse = ControllerResponse<PaginatedResponse<CategoryDTO>>;
@@ -44,7 +44,7 @@ export class ListCategoriesController {
       query: {
         page: query.page,
         pageSize: query.pageSize,
-        label: query.label,
+        label: query.searchBy,
       },
       requesterId: req.requester.userId,
     });
