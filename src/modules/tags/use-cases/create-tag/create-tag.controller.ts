@@ -20,7 +20,7 @@ export class CreateTagController {
   ): ControllerResponse<TagDTO> {
     const result = await this.createTagService.execute({
       createTagDTO,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
     return { data: result.data.toDTO(), message: 'Success' };
   }

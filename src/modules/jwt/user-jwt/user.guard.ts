@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import {
-  JwtUserPayload,
+  Requester,
   UserJwtService,
 } from 'src/modules/jwt/user-jwt/user-jwt.service';
 
-export type UserRequest = Request & { jwtPayload: JwtUserPayload };
+export type UserRequest = Request & { requester: Requester };
 
 @Injectable()
 export class UserGuard implements CanActivate {
@@ -21,8 +21,7 @@ export class UserGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) throw new UnauthorizedException('User credentials not found');
-
-    request['jwtPayload'] = await this.userJwtService.verifyToken(token);
+    request['requester'] = await this.userJwtService.verifyToken(token);
 
     return true;
   }

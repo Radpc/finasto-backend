@@ -22,7 +22,7 @@ export class UpdateTagController {
     const result = await this.updateTagService.execute({
       tagId,
       updateTagDTO,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
     return { data: result.data.toDTO(), message: 'Success' };
   }

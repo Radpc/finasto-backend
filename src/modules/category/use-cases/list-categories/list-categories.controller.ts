@@ -46,7 +46,7 @@ export class ListCategoriesController {
         pageSize: query.pageSize,
         label: query.label,
       },
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
 
     return {

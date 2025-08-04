@@ -18,7 +18,7 @@ export class CreateCategoryController {
   ) {
     const res = await this.createCategory.execute({
       payload: createCategoryDto,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
     return { data: res.data.toDTO(), message: 'Category created' };
   }

@@ -27,7 +27,7 @@ export class GetTagByIdController {
   ): ControllerResponse<TagDTO> {
     const result = await this.getTagByIdService.execute({
       tagId,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
     return { data: result.data.toDTO(), message: 'Success' };
   }

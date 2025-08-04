@@ -19,7 +19,7 @@ export class GetFamilyByIdController {
   ): ControllerResponse<FamilyDTO> {
     const result = await this.getFamilyByIdService.execute({
       familyId,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
 
     return { data: result.data.toDTO(), message: 'Success' };

@@ -20,7 +20,7 @@ export class RemovePaymentController {
   ): ControllerResponse<PaymentDTO> {
     const res = await this.deletePaymentService.execute({
       paymentId,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
     return {
       data: res.toDTO(),

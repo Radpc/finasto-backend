@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserRole } from 'src/modules/user/domain/user.domain';
 
-export type JwtUserPayload = {
+export type Requester = {
   userId: string;
   role: UserRole;
 };
@@ -20,7 +20,7 @@ export class UserJwtService {
 
   async verifyToken(token: string) {
     try {
-      const payload: JwtUserPayload = await this.jwtService.verifyAsync(token, {
+      const payload: Requester = await this.jwtService.verifyAsync(token, {
         secret: this.jwtSecret,
       });
       return payload;
@@ -31,7 +31,7 @@ export class UserJwtService {
 
   async safeVerifyToken(token: string) {
     try {
-      const payload: JwtUserPayload = await this.jwtService.verifyAsync(token, {
+      const payload: Requester = await this.jwtService.verifyAsync(token, {
         secret: this.jwtSecret,
       });
       return payload;
@@ -40,7 +40,7 @@ export class UserJwtService {
     }
   }
 
-  async encodeJWT(payload: JwtUserPayload) {
+  async encodeJWT(payload: Requester) {
     return this.jwtService.sign(payload, {
       secret: this.jwtSecret,
       expiresIn: '1d',

@@ -21,7 +21,7 @@ export class GetCategoryByIdController {
   async handle(@Param('id') id: string, @Req() req: UserRequest) {
     const { data: category } = await this.getCategory.execute({
       categoryId: id,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
 
     if (!category) throw new NotFoundException('Category not found');

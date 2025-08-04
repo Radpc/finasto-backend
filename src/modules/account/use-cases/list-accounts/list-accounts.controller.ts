@@ -20,7 +20,7 @@ export class ListAccountController {
   ): ControllerResponse<PaginatedResponse<AccountDTO>> {
     const result = await this.listAccountsService.execute({
       query: listAccountQuery,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
 
     return {

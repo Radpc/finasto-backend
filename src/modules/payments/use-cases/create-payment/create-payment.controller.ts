@@ -16,7 +16,7 @@ export class CreatePaymentController {
     @Req() request: UserRequest,
     @Body() createPaymentDto: CreatePaymentDTO,
   ) {
-    const requesterId = request.jwtPayload.userId;
+    const requesterId = request.requester.userId;
     const res = await this.createPaymentService.execute({
       payload: createPaymentDto,
       requesterId,

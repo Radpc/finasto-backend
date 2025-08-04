@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma.service';
 import { Prisma } from '@prisma/client';
 import { UserDomain } from 'src/modules/user/domain/user.domain';
 import { DefaultArgs } from '@prisma/client/runtime/library';
+import { PaginatedList } from 'src/types/utils';
 
 type GetUniqueInput = {
   select?: Prisma.UserSelect<DefaultArgs> | null | undefined;
@@ -24,18 +25,25 @@ export class UserRepoService {
     cursor?: Prisma.UserWhereUniqueInput;
     where?: Prisma.UserWhereInput;
     orderBy?: Prisma.UserOrderByWithRelationInput;
-  }): Promise<UserDomain[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+    include?: Prisma.UserInclude<DefaultArgs>;
+  }): Promise<PaginatedList<UserDomain>> {
+    const { skip, take, cursor, where, orderBy, include } = params;
 
-    const rawUsers = await this.prisma.user.findMany({
+    const query = {
       skip,
       take,
       cursor,
       where,
       orderBy,
-    });
+      include,
+    } satisfies Prisma.UserFindManyArgs;
 
-    return rawUsers.map(UserDomain.fromRaw);
+    const [raws, count] = await this.prisma.$transaction([
+      this.prisma.user.findMany(query),
+      this.prisma.user.count({ where: query.where }),
+    ]);
+
+    return { data: raws.map(UserDomain.fromRaw), total: count };
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<UserDomain> {

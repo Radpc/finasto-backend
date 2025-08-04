@@ -34,7 +34,7 @@ export class ListFamiliesController {
         pageSize: query.pageSize,
         name: query.name,
       },
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
 
     return {

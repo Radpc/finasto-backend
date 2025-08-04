@@ -20,7 +20,7 @@ export class UpdateCategoryController {
     return this.categoriesService.execute({
       categoryId: id,
       payload: updateCategoryDto,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
   }
 }

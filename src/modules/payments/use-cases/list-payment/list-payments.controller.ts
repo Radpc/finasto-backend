@@ -21,7 +21,7 @@ export class ListPaymentsController {
   ): ControllerResponse<PaginatedResponse<PaymentDTO>> {
     const { data, total } = await this.listPaymentsService.execute({
       query,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
     return {
       data: {

@@ -20,7 +20,7 @@ export class CreateAccountController {
   ): ControllerResponse<AccountDTO> {
     const result = await this.createAccountService.execute({
       payload,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
 
     return {

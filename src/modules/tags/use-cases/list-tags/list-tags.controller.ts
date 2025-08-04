@@ -20,7 +20,7 @@ export class ListTagsController {
   ): ControllerResponse<PaginatedResponse<TagDTO>> {
     const result = await this.listTagsService.execute({
       query,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
     return {
       message: 'Success',

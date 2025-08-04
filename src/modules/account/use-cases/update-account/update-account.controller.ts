@@ -21,7 +21,7 @@ export class UpdateAccountController {
   ): ControllerResponse<AccountDTO> {
     const result = await this.updateAccountService.execute({
       payload,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
       accountId: accountId,
     });
 

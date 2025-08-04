@@ -20,7 +20,7 @@ export class CreateFamilyController {
   ): ControllerResponse<FamilyDTO> {
     const result = await this.createFamilyService.execute({
       payload: body,
-      requesterId: req.jwtPayload.userId,
+      requesterId: req.requester.userId,
     });
 
     return { data: result.data.toDTO(), message: 'Success' };
