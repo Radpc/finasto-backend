@@ -8,6 +8,7 @@ import {
   IsEnum,
   IsArray,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import { PaymentStatus } from '../../domain/payment.domain';
 import { PaginatedQuery } from 'src/types/paginated-dto';
@@ -44,7 +45,7 @@ export class ListPaymentsQuery extends PaginatedQuery {
   until?: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsUUID()
   @ApiProperty({ type: String, required: false })
   categoryId?: string;
 
