@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsNumber,
   IsDateString,
+  IsArray,
 } from 'class-validator';
 import { PaymentMethod } from 'src/modules/payments/domain/payment.domain';
 
@@ -61,4 +62,15 @@ export class CreateRecurringPaymentDTO {
   @IsString()
   @ApiProperty({ type: String, example: 1 })
   categoryId: string;
+
+  @IsOptional()
+  @IsString({ each: true })
+  @IsArray()
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    example: '[]',
+    required: false,
+  })
+  tagIds?: string[];
 }

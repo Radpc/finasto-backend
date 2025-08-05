@@ -73,9 +73,10 @@ model Tag {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  payments Payment[]
-  family   Family    @relation(fields: [familyId], references: [id])
-  familyId String
+  payments          Payment[]
+  family            Family             @relation(fields: [familyId], references: [id])
+  familyId          String
+  recurringPayments RecurringPayment[]
 }
 
 model Payment {
@@ -124,6 +125,8 @@ model RecurringPayment {
 
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
+
+  tags Tag[]
 
   payments Payment[]
 }

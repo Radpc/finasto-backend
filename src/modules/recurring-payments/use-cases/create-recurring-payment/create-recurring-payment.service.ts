@@ -100,6 +100,12 @@ export class CreateRecurringPaymentService {
           },
         },
         automaticPayment: payload.automaticPayment,
+        tags: {
+          connect: payload.tagIds?.map((t) => ({
+            id: t,
+            family: { users: { some: { id: requester.userId } } },
+          })),
+        },
         category: {
           connect: {
             id: payload.categoryId,
