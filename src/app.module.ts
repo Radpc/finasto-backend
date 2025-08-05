@@ -10,6 +10,7 @@ import { UsersModule } from './modules/user/users.module';
 import { TagsModule } from './modules/tags/tags.module';
 import { AccountModule } from './modules/account/account.module';
 import { FamilyModule } from './modules/family/family.module';
+import { RecurringPaymentsModule } from './modules/recurring-payments/recurring-payments.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { FamilyModule } from './modules/family/family.module';
     UsersModule,
     AccountModule,
     FamilyModule,
+    RecurringPaymentsModule,
   ],
   controllers: [],
   providers: [AppService],

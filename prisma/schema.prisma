@@ -61,9 +61,10 @@ model Category {
   family   Family @relation(fields: [familyId], references: [id])
   familyId String
 
-  payments  Payment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  payments          Payment[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  recurringPayments RecurringPayment[]
 }
 
 model Tag {
@@ -103,21 +104,26 @@ model Payment {
 }
 
 model RecurringPayment {
-  id                   String   @id @default(uuid())
+  id                   String  @id @default(uuid())
+  description          String
+  paymentMethod        String
   totalValue           Float?
   numberOfInstallments Int?
   automaticPayment     Boolean
   singlePaymentValue   Float
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  dayOfMonth           Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   createdBy User   @relation(fields: [userId], references: [id])
   userId    String
 
-  dayOfMonth Int
-
   account   Account @relation(fields: [accountId], references: [id])
   accountId String
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
 
   payments Payment[]
 }
