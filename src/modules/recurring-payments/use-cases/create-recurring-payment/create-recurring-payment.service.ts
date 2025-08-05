@@ -1,7 +1,7 @@
 import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { RecurringPaymentDomain } from '../../domain/recurring-payment.domain';
 import { CreateRecurringPaymentDTO } from '../../dto/create-recurring-payment.dto';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { RecurringPaymentRepoService } from 'src/database/repositories/recurring-payment/recurring-payment-repo.service';
 import { Prisma } from '@prisma/client';
 import { PaymentStatus } from 'src/modules/payments/domain/payment.domain';
@@ -25,15 +25,20 @@ export class CreateRecurringPaymentService {
   async execute(input: Input): Promise<Output> {
     const { payload, requester } = input;
 
-    const now = DateTime.now();
-    const currentDay = now.day;
+    const startDate = payload.startDateFrom
+      ? DateTime.fromISO(payload.startDateFrom)
+      : DateTime.now();
+
+    if (!startDate.isValid) throw new BadRequestException('Invalid date');
+
+    const currentDay = startDate.day;
 
     const paymentStartDate =
-      currentDay > payload.dayOfMonth
+      currentDay < payload.dayOfMonth
         ? // This month
-          now.set({ day: payload.dayOfMonth })
+          startDate.set({ day: payload.dayOfMonth })
         : // Next month
-          now.set({ day: payload.dayOfMonth }).plus({ month: 1 });
+          startDate.set({ day: payload.dayOfMonth }).plus({ month: 1 });
 
     const payments: Prisma.PaymentCreateManyRecurringPaymentInput[] = [
       {

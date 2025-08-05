@@ -7,6 +7,7 @@ import {
   IsBoolean,
   IsOptional,
   IsNumber,
+  IsDateString,
 } from 'class-validator';
 import { PaymentMethod } from 'src/modules/payments/domain/payment.domain';
 
@@ -14,6 +15,11 @@ export class CreateRecurringPaymentDTO {
   @IsUUID()
   @ApiProperty()
   accountId: string;
+
+  @IsDateString()
+  @IsOptional()
+  @ApiProperty()
+  startDateFrom?: string;
 
   @IsNotEmpty()
   @IsString()
