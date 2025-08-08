@@ -1,28 +1,33 @@
-import { Body, Controller, Param, Patch, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
 import { ControllerResponse } from 'src/types/response';
 import { PaymentDTO } from '../../dto/payment.dto';
-import { UpdatePaymentService } from './update-payment.service';
-import { UpdatePaymentDTO } from '../../dto/update-payment.dto';
+import { GetPaymentByIdService } from './get-payment-by-id.service';
 
 @Controller('payments')
 @ApiTags('Payment')
 export class UpdatePaymentController {
-  constructor(private readonly updatePaymentService: UpdatePaymentService) {}
+  constructor(private readonly getPaymentByIdService: GetPaymentByIdService) {}
 
   @UseGuards(UserGuard)
   @ApiBearerAuth()
-  @Patch('/:paymentId')
+  @Get('/:paymentId')
   async handle(
-    @Body() payload: UpdatePaymentDTO,
     @Param('paymentId') paymentId: string,
     @Req() req: UserRequest,
   ): ControllerResponse<PaymentDTO> {
-    const res = await this.updatePaymentService.execute({
+    const res = await this.getPaymentByIdService.execute({
       paymentId,
-      payload,
       requester: req.requester,
     });
     return {

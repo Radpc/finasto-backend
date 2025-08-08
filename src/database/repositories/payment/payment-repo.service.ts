@@ -9,11 +9,13 @@ import { DefaultArgs } from '@prisma/client/runtime/library';
 export class PaymentRepoService {
   constructor(private prisma: PrismaService) {}
 
-  async getPayment(
-    paymentWhereUniqueInput: Prisma.PaymentWhereUniqueInput,
-  ): Promise<PaymentDomain | null> {
+  async getPayment(options: {
+    where: Prisma.PaymentWhereUniqueInput;
+    include?: Prisma.PaymentInclude<DefaultArgs>;
+  }): Promise<PaymentDomain | null> {
     const raw = await this.prisma.payment.findUnique({
-      where: paymentWhereUniqueInput,
+      where: options.where,
+      include: options.include,
     });
 
     return raw ? PaymentDomain.fromRaw(raw) : null;

@@ -13,6 +13,8 @@ import { GetPaymentValueSumController } from './use-cases/get-payment-value-sum/
 import { GetPaymentValueSumService } from './use-cases/get-payment-value-sum/get-payment-value-sum.service';
 import { UpdatePaymentController } from './use-cases/update-payment/update-payment.controller';
 import { UpdatePaymentService } from './use-cases/update-payment/update-payment.service';
+import { GetPaymentByIdService } from './use-cases/get-payment-by-id/get-payment-by-id.service';
+import { GetPaymentByIdController } from './use-cases/get-payment-by-id/get-payment-by-id.controller';
 
 @Module({
   controllers: [
@@ -20,18 +22,22 @@ import { UpdatePaymentService } from './use-cases/update-payment/update-payment.
     ListPaymentsController,
     RemovePaymentController,
     GetPaymentValueSumController,
+    GetPaymentByIdController,
     UpdatePaymentController,
   ],
   providers: [
-    PrismaService,
-    PaymentRepoService,
     CategoryRepoService,
-    TagRepoService,
     CreatePaymentService,
     ListPaymentsService,
     RemovePaymentService,
     GetPaymentValueSumService,
+    GetPaymentByIdService,
     UpdatePaymentService,
+
+    // Repos
+    PrismaService,
+    TagRepoService,
+    PaymentRepoService,
   ],
 })
 export class PaymentsModule {}
