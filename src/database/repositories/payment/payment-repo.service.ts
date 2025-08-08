@@ -19,6 +19,25 @@ export class PaymentRepoService {
     return raw ? PaymentDomain.fromRaw(raw) : null;
   }
 
+  async getPaymentValueSums({ where }: { where?: Prisma.PaymentWhereInput }) {
+    const gains = this.prisma.payment.aggregate({
+      where: { ...where, AND: [{ value: { gte: 0 } }] },
+      _sum: { value: true },
+    });
+
+    const losses = this.prisma.payment.aggregate({
+      where: { ...where, AND: [{ value: { lte: 0 } }] },
+      _sum: { value: true },
+    });
+
+    const [gainRes, lossRes] = await this.prisma.$transaction([gains, losses]);
+
+    return {
+      gain: gainRes._sum.value || 0,
+      loss: lossRes._sum.value || 0,
+    };
+  }
+
   async getPayments(params: {
     skip?: number;
     take?: number;

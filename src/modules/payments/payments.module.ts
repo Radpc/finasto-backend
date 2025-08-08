@@ -9,12 +9,15 @@ import { ListPaymentsController } from './use-cases/list-payment/list-payments.c
 import { ListPaymentsService } from './use-cases/list-payment/list-payments.service';
 import { RemovePaymentController } from './use-cases/remove-payment/remove-payment.controller';
 import { RemovePaymentService } from './use-cases/remove-payment/remove-payment.service';
+import { GetPaymentValueSumController } from './use-cases/get-payment-value-sum/get-payment-value-sum.controller';
+import { GetPaymentValueSumService } from './use-cases/get-payment-value-sum/get-payment-value-sum.service';
 
 @Module({
   controllers: [
     CreatePaymentController,
     ListPaymentsController,
     RemovePaymentController,
+    GetPaymentValueSumController,
   ],
   providers: [
     PrismaService,
@@ -24,6 +27,7 @@ import { RemovePaymentService } from './use-cases/remove-payment/remove-payment.
     CreatePaymentService,
     ListPaymentsService,
     RemovePaymentService,
+    GetPaymentValueSumService,
   ],
 })
 export class PaymentsModule {}
