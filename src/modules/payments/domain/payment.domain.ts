@@ -7,6 +7,7 @@ import { AccountDomain } from 'src/modules/account/domain/account.domain';
 export enum PaymentStatus {
   Paid = 'Paid',
   Pending = 'Pending',
+  Predicted = 'Predicted',
 }
 
 export enum PaymentMethod {

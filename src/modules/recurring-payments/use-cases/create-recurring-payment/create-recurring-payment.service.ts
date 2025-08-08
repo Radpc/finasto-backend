@@ -40,6 +40,11 @@ export class CreateRecurringPaymentService {
         : // Next month
           startDate.set({ day: payload.dayOfMonth }).plus({ month: 1 });
 
+    const now = DateTime.now();
+    const getPaidStatus = (date: DateTime) => {
+      return now > date ? PaymentStatus.Paid : PaymentStatus.Predicted;
+    };
+
     const payments: Prisma.PaymentCreateManyRecurringPaymentInput[] = [
       {
         accountId: payload.accountId,
@@ -47,7 +52,7 @@ export class CreateRecurringPaymentService {
         description: payload.description,
         paymentMethod: payload.paymentMethod,
         status: payload.automaticPayment
-          ? PaymentStatus.Paid
+          ? getPaidStatus(paymentStartDate)
           : PaymentStatus.Pending,
         userId: requester.userId,
         value: payload.singlePaymentValue,
@@ -62,23 +67,20 @@ export class CreateRecurringPaymentService {
       [...Array.from({ length: payload.numberOfInstallments - 1 })].forEach(
         (_, i) => {
           const installmentNumber = i + 1;
-          const newPaymentDate = paymentStartDate
-            .plus({
-              months: installmentNumber,
-            })
-            .toISO();
-
+          const newPaymentDate = paymentStartDate.plus({
+            months: installmentNumber,
+          });
           payments.push({
             accountId: payload.accountId,
             categoryId: payload.categoryId,
             description: payload.description,
             paymentMethod: payload.paymentMethod,
             status: payload.automaticPayment
-              ? PaymentStatus.Paid
+              ? getPaidStatus(newPaymentDate)
               : PaymentStatus.Pending,
             userId: requester.userId,
             value: payload.singlePaymentValue,
-            paymentDate: newPaymentDate,
+            paymentDate: newPaymentDate.toISO(),
             observation: `${installmentNumber + 1}/${payload.numberOfInstallments}`,
           });
         },
