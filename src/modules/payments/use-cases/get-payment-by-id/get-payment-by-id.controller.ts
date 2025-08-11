@@ -16,7 +16,7 @@ import { GetPaymentByIdService } from './get-payment-by-id.service';
 
 @Controller('payments')
 @ApiTags('Payment')
-export class UpdatePaymentController {
+export class GetPaymentByIdController {
   constructor(private readonly getPaymentByIdService: GetPaymentByIdService) {}
 
   @UseGuards(UserGuard)
