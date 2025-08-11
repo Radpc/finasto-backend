@@ -36,6 +36,12 @@ export class ListPaymentsService {
           gte: query.minValue,
           lte: query.maxValue,
         },
+        recurringPayment:
+          query.hasRecurringPayment !== undefined
+            ? query.hasRecurringPayment
+              ? { id: {} }
+              : null
+            : undefined,
         OR: query.searchBy
           ? [
               { description: { contains: query.searchBy } },
@@ -46,7 +52,12 @@ export class ListPaymentsService {
       skip,
       take,
       orderBy: { paymentDate: Prisma.SortOrder.desc },
-      include: { category: true, tags: true, account: true },
+      include: {
+        category: true,
+        tags: true,
+        account: true,
+        recurringPayment: true,
+      },
     });
 
     return res;

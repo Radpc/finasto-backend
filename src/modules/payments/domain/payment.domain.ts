@@ -1,8 +1,15 @@
-import { Account, Category, Payment, Tag } from '@prisma/client';
+import {
+  Account,
+  Category,
+  Payment,
+  RecurringPayment,
+  Tag,
+} from '@prisma/client';
 import { CategoryDomain } from 'src/modules/category/domain/category.domain';
 import { TagDomain } from 'src/modules/tags/domain/tag.domain';
 import { PaymentDTO } from '../dto/payment.dto';
 import { AccountDomain } from 'src/modules/account/domain/account.domain';
+import { RecurringPaymentDomain } from 'src/modules/recurring-payments/domain/recurring-payment.domain';
 
 export enum PaymentStatus {
   Paid = 'Paid',
@@ -31,12 +38,14 @@ interface IProps {
   account?: AccountDomain;
   category?: CategoryDomain;
   tags?: TagDomain[];
+  recurringPayment?: RecurringPaymentDomain;
 }
 
 type PaymentWithIncludes = Payment & {
   account?: Account;
   category?: Category;
   tags?: Tag[];
+  recurringPayment?: RecurringPayment;
 };
 
 export class PaymentDomain {
@@ -53,6 +62,7 @@ export class PaymentDomain {
   account?: AccountDomain;
   category?: CategoryDomain;
   tags?: TagDomain[];
+  recurringPayment?: RecurringPaymentDomain;
 
   constructor(props: IProps) {
     this.id = props.id;
@@ -68,6 +78,7 @@ export class PaymentDomain {
     this.account = props.account;
     this.category = props.category;
     this.tags = props.tags;
+    this.recurringPayment = props.recurringPayment;
   }
 
   static fromRaw(paymentRaw: PaymentWithIncludes) {
@@ -90,6 +101,9 @@ export class PaymentDomain {
       tags: paymentRaw.tags
         ? paymentRaw.tags.map(TagDomain.fromRaw)
         : undefined,
+      recurringPayment: paymentRaw.recurringPayment
+        ? RecurringPaymentDomain.fromRaw(paymentRaw.recurringPayment)
+        : undefined,
     });
   }
   toDTO() {
@@ -106,6 +120,7 @@ export class PaymentDomain {
       account: this.account?.toDTO(),
       category: this.category?.toDTO(),
       tags: this.tags?.map((t) => t.toDTO()),
+      recurringPayment: this.recurringPayment?.toDTO(),
     });
   }
 }

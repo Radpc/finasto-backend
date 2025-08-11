@@ -8,6 +8,7 @@ import {
   IsArray,
   IsString,
   IsUUID,
+  IsBoolean,
 } from 'class-validator';
 import { PaymentStatus } from '../../domain/payment.domain';
 import { PaginatedQuery } from 'src/types/paginated-dto';
@@ -88,4 +89,9 @@ export class ListPaymentsQuery extends PaginatedQuery {
   @IsString()
   @ApiProperty()
   accountId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty()
+  hasRecurringPayment?: boolean;
 }
