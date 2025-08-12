@@ -37,6 +37,12 @@ export class GetPaymentValueSumService {
           gte: query.minValue,
           lte: query.maxValue,
         },
+        recurringPayment:
+          query.hasRecurringPayment !== undefined
+            ? query.hasRecurringPayment
+              ? { id: {} }
+              : null
+            : undefined,
         OR: query.searchBy
           ? [
               { description: { contains: query.searchBy } },
