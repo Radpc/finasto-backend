@@ -3,6 +3,7 @@ import { PaymentMethod, PaymentStatus } from '../domain/payment.domain';
 import { TagDTO } from 'src/modules/tags/dto/tag.dto';
 import { AccountDTO } from 'src/modules/account/dto/account.dto';
 import { RecurringPaymentDTO } from 'src/modules/recurring-payments/dto/recurring-payment.dto';
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 interface IProps {
   id: string;
@@ -17,6 +18,7 @@ interface IProps {
 
   account?: AccountDTO;
   category?: CategoryDTO;
+  createdBy?: UserDTO;
   tags?: TagDTO[];
   recurringPayment?: RecurringPaymentDTO;
 }
@@ -33,6 +35,7 @@ export class PaymentDTO {
   updatedAt: string;
 
   account?: AccountDTO;
+  createdBy?: UserDTO;
   category?: CategoryDTO;
   tags?: TagDTO[];
   recurringPayment?: RecurringPaymentDTO;
@@ -50,6 +53,7 @@ export class PaymentDTO {
 
     this.account = props.account;
     this.category = props.category;
+    this.createdBy = props.createdBy;
     this.tags = props.tags;
     this.recurringPayment = props.recurringPayment;
   }

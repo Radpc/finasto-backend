@@ -4,12 +4,14 @@ import {
   Payment,
   RecurringPayment,
   Tag,
+  User,
 } from '@prisma/client';
 import { CategoryDomain } from 'src/modules/category/domain/category.domain';
 import { TagDomain } from 'src/modules/tags/domain/tag.domain';
 import { PaymentDTO } from '../dto/payment.dto';
 import { AccountDomain } from 'src/modules/account/domain/account.domain';
 import { RecurringPaymentDomain } from 'src/modules/recurring-payments/domain/recurring-payment.domain';
+import { UserDomain } from 'src/modules/user/domain/user.domain';
 
 export enum PaymentStatus {
   Paid = 'Paid',
@@ -37,6 +39,7 @@ interface IProps {
 
   account?: AccountDomain;
   category?: CategoryDomain;
+  createdBy?: UserDomain;
   tags?: TagDomain[];
   recurringPayment?: RecurringPaymentDomain;
 }
@@ -44,6 +47,7 @@ interface IProps {
 type PaymentWithIncludes = Payment & {
   account?: Account;
   category?: Category;
+  createdBy?: User;
   tags?: Tag[];
   recurringPayment?: RecurringPayment;
 };
@@ -61,6 +65,7 @@ export class PaymentDomain {
 
   account?: AccountDomain;
   category?: CategoryDomain;
+  createdBy?: UserDomain;
   tags?: TagDomain[];
   recurringPayment?: RecurringPaymentDomain;
 
@@ -77,6 +82,7 @@ export class PaymentDomain {
 
     this.account = props.account;
     this.category = props.category;
+    this.createdBy = props.createdBy;
     this.tags = props.tags;
     this.recurringPayment = props.recurringPayment;
   }
@@ -97,6 +103,9 @@ export class PaymentDomain {
         : undefined,
       category: paymentRaw.category
         ? CategoryDomain.fromRaw(paymentRaw.category)
+        : undefined,
+      createdBy: paymentRaw.createdBy
+        ? UserDomain.fromRaw(paymentRaw.createdBy)
         : undefined,
       tags: paymentRaw.tags
         ? paymentRaw.tags.map(TagDomain.fromRaw)
