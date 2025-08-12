@@ -92,6 +92,7 @@ export class ListPaymentsQuery extends PaginatedQuery {
 
   @IsOptional()
   @IsBoolean()
+  @Transform(({ value }) => value === 'true')
   @ApiProperty()
   hasRecurringPayment?: boolean;
 }
