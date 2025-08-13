@@ -128,6 +128,7 @@ export class PaymentDomain {
       updatedAt: this.updatedAt.toISOString(),
       account: this.account?.toDTO(),
       category: this.category?.toDTO(),
+      createdBy: this.createdBy?.toDTO(),
       tags: this.tags?.map((t) => t.toDTO()),
       recurringPayment: this.recurringPayment?.toDTO(),
     });
