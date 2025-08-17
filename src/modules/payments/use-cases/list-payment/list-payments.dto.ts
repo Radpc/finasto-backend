@@ -10,7 +10,7 @@ import {
   IsUUID,
   IsBoolean,
 } from 'class-validator';
-import { PaymentStatus } from '../../domain/payment.domain';
+import { PaymentMethod, PaymentStatus } from '../../domain/payment.domain';
 import { PaginatedQuery } from 'src/types/paginated-dto';
 
 export class ListPaymentsQuery extends PaginatedQuery {
@@ -59,6 +59,15 @@ export class ListPaymentsQuery extends PaginatedQuery {
   status?: PaymentStatus;
 
   @IsOptional()
+  @IsEnum(PaymentMethod)
+  @ApiProperty({
+    enum: PaymentMethod,
+    example: PaymentMethod.Credit,
+    required: false,
+  })
+  paymentMethod?: PaymentMethod;
+
+  @IsOptional()
   @IsString()
   @ApiProperty({
     type: String,
@@ -82,17 +91,17 @@ export class ListPaymentsQuery extends PaginatedQuery {
 
   @IsOptional()
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ required: false })
   familyId?: string;
 
   @IsOptional()
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ required: false })
   accountId?: string;
 
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
-  @ApiProperty()
+  @ApiProperty({ required: false })
   hasRecurringPayment?: boolean;
 }

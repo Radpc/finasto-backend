@@ -32,6 +32,7 @@ export class ListPaymentsService {
           gte: query.since ? new Date(query.since) : undefined,
           lte: query.until ? new Date(query.until) : undefined,
         },
+        paymentMethod: query.paymentMethod,
         value: {
           gte: query.minValue,
           lte: query.maxValue,
