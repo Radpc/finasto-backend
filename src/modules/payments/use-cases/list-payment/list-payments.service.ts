@@ -19,6 +19,19 @@ export class ListPaymentsService {
     const take = query.pageSize;
     const skip = take * (query.page - 1);
 
+    let recurringPaymentWhere:
+      | Prisma.RecurringPaymentWhereInput
+      | null
+      | undefined;
+
+    if (query.hasRecurringPayment === false) {
+      recurringPaymentWhere = null;
+    } else if (query.recurringPaymentId) {
+      recurringPaymentWhere = { id: query.recurringPaymentId };
+    } else if (query.hasRecurringPayment === true) {
+      recurringPaymentWhere = { id: {} };
+    }
+
     const res = await this.paymentRepository.getPayments({
       where: {
         account: {
@@ -37,12 +50,7 @@ export class ListPaymentsService {
           gte: query.minValue,
           lte: query.maxValue,
         },
-        recurringPayment:
-          query.hasRecurringPayment !== undefined
-            ? query.hasRecurringPayment
-              ? { id: {} }
-              : null
-            : undefined,
+        recurringPayment: recurringPaymentWhere,
         OR: query.searchBy
           ? [
               { description: { contains: query.searchBy } },

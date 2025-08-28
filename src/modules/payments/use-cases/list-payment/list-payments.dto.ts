@@ -97,6 +97,11 @@ export class ListPaymentsQuery extends PaginatedQuery {
   @IsOptional()
   @IsString()
   @ApiProperty({ required: false })
+  recurringPaymentId?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false })
   accountId?: string;
 
   @IsOptional()

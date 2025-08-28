@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GetPaymentValueQuery } from './get-payment-value.query';
 import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { PaymentRepoService } from 'src/database/repositories/payment/payment-repo.service';
+import { Prisma } from '@prisma/client';
 
 type Input = {
   query: GetPaymentValueQuery;
@@ -20,6 +21,19 @@ export class GetPaymentValueSumService {
   constructor(private readonly paymentRepoService: PaymentRepoService) {}
 
   async execute({ query, requester }: Input): Promise<Output> {
+    let recurringPaymentWhere:
+      | Prisma.RecurringPaymentWhereInput
+      | null
+      | undefined;
+
+    if (query.hasRecurringPayment === false) {
+      recurringPaymentWhere = null;
+    } else if (query.recurringPaymentId) {
+      recurringPaymentWhere = { id: query.recurringPaymentId };
+    } else if (query.hasRecurringPayment === true) {
+      recurringPaymentWhere = { id: {} };
+    }
+
     const res = await this.paymentRepoService.getPaymentValueSums({
       where: {
         account: {
@@ -38,12 +52,7 @@ export class GetPaymentValueSumService {
           gte: query.minValue,
           lte: query.maxValue,
         },
-        recurringPayment:
-          query.hasRecurringPayment !== undefined
-            ? query.hasRecurringPayment
-              ? { id: {} }
-              : null
-            : undefined,
+        recurringPayment: recurringPaymentWhere,
         OR: query.searchBy
           ? [
               { description: { contains: query.searchBy } },

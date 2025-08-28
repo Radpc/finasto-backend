@@ -27,7 +27,12 @@ export class GetRecurringPaymentByIdService {
           family: { users: { some: { id: input.requester.userId } } },
         },
       },
-      include: { payments: true },
+      include: {
+        account: true,
+        category: true,
+        tags: true,
+        createdBy: true,
+      },
     });
 
     if (!result) throw new NotFoundException();

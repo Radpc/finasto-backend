@@ -9,6 +9,7 @@ import { GetRecurringPaymentByIdService } from './use-cases/get-recurring-paymen
 import { ListRecurringPaymentsService } from './use-cases/list-recurring-payments/list-recurring-payments.service';
 import { CreatePaymentFromRecurringService } from './jobs/create-payment-from-recurring.service/create-payment-from-recurring.service';
 import { CreatePaymentFromRecurringController } from './jobs/create-payment-from-recurring.service/create-payment-from-recurring.controller';
+import { PaymentRepoService } from 'src/database/repositories/payment/payment-repo.service';
 
 @Module({
   controllers: [
@@ -28,6 +29,7 @@ import { CreatePaymentFromRecurringController } from './jobs/create-payment-from
 
     // Repo
     RecurringPaymentRepoService,
+    PaymentRepoService,
   ],
 })
 export class RecurringPaymentsModule {}
