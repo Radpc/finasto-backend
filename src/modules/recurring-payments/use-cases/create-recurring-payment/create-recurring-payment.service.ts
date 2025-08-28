@@ -85,6 +85,25 @@ export class CreateRecurringPaymentService {
           });
         },
       );
+    } else {
+      const dates = [paymentStartDate];
+      if (paymentStartDate.month === DateTime.now().month)
+        dates.push(paymentStartDate.plus({ month: 1 }));
+
+      dates.forEach((d) => {
+        payments.push({
+          accountId: payload.accountId,
+          categoryId: payload.categoryId,
+          description: payload.description,
+          paymentMethod: payload.paymentMethod,
+          status: payload.automaticPayment
+            ? getPaidStatus(d)
+            : PaymentStatus.Pending,
+          userId: requester.userId,
+          value: payload.singlePaymentValue,
+          paymentDate: d.toISO(),
+        });
+      });
     }
 
     const result =
