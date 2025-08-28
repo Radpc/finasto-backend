@@ -25,8 +25,8 @@ export class RecurringPaymentRepoService {
   }
 
   async getRecurringPayments(params: {
-    skip: number;
-    take: number;
+    skip?: number;
+    take?: number;
     cursor?: Prisma.RecurringPaymentWhereUniqueInput;
     where?: Prisma.RecurringPaymentWhereInput;
     orderBy?: Prisma.RecurringPaymentOrderByWithRelationInput;

@@ -126,7 +126,6 @@ model RecurringPayment {
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
 
-  tags Tag[]
-
+  tags     Tag[]
   payments Payment[]
 }

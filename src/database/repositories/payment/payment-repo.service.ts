@@ -75,6 +75,15 @@ export class PaymentRepoService {
     return PaymentDomain.fromRaw(raw);
   }
 
+  async createPayments(
+    data: Prisma.PaymentCreateManyInput[],
+  ): Promise<PaymentDomain[]> {
+    const raw = await this.prisma.$transaction(
+      data.map((d) => this.prisma.payment.create({ data: d })),
+    );
+    return raw.map(PaymentDomain.fromRaw);
+  }
+
   async updatePayment(params: {
     where: Prisma.PaymentWhereUniqueInput;
     data: Prisma.PaymentUpdateInput;
