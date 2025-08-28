@@ -32,10 +32,11 @@ export class CreateRecurringPaymentDTO {
   @ApiProperty({ enum: PaymentMethod, example: PaymentMethod.Cash })
   paymentMethod: PaymentMethod;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @ApiProperty({ type: Number, example: 75.8 })
-  totalValue: number;
+  totalValue?: number;
 
   @IsNotEmpty()
   @IsNumber()
