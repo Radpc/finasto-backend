@@ -15,6 +15,8 @@ import { UpdatePaymentController } from './use-cases/update-payment/update-payme
 import { UpdatePaymentService } from './use-cases/update-payment/update-payment.service';
 import { GetPaymentByIdService } from './use-cases/get-payment-by-id/get-payment-by-id.service';
 import { GetPaymentByIdController } from './use-cases/get-payment-by-id/get-payment-by-id.controller';
+import { UpdatePredictedPaymentsService } from './jobs/update-predicted-payments/update-predicted-payments.service';
+import { UpdatePredictedPaymentsController } from './jobs/update-predicted-payments/update-predicted-payments.controller';
 
 @Module({
   controllers: [
@@ -24,6 +26,7 @@ import { GetPaymentByIdController } from './use-cases/get-payment-by-id/get-paym
     GetPaymentValueSumController,
     GetPaymentByIdController,
     UpdatePaymentController,
+    UpdatePredictedPaymentsController,
   ],
   providers: [
     CategoryRepoService,
@@ -33,6 +36,9 @@ import { GetPaymentByIdController } from './use-cases/get-payment-by-id/get-paym
     GetPaymentValueSumService,
     GetPaymentByIdService,
     UpdatePaymentService,
+
+    // Jobs
+    UpdatePredictedPaymentsService,
 
     // Repos
     PrismaService,

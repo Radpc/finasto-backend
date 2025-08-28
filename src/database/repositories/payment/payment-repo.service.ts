@@ -97,6 +97,20 @@ export class PaymentRepoService {
     return PaymentDomain.fromRaw(raw);
   }
 
+  async updatePayments(params: {
+    where: Prisma.PaymentWhereInput;
+    data: Prisma.PaymentUpdateInput;
+  }): Promise<{ updated: number }> {
+    const { where, data } = params;
+
+    const raw = await this.prisma.payment.updateMany({
+      data,
+      where,
+    });
+
+    return { updated: raw.count };
+  }
+
   async deletePayment(
     where: Prisma.PaymentWhereUniqueInput,
   ): Promise<PaymentDomain> {
