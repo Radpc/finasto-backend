@@ -7,18 +7,24 @@ import { ListRecurringPaymentsController } from './use-cases/list-recurring-paym
 import { CreateRecurringPaymentService } from './use-cases/create-recurring-payment/create-recurring-payment.service';
 import { GetRecurringPaymentByIdService } from './use-cases/get-recurring-payment-by-id/get-recurring-payment-by-id.service';
 import { ListRecurringPaymentsService } from './use-cases/list-recurring-payments/list-recurring-payments.service';
+import { CreatePaymentFromRecurringService } from './jobs/create-payment-from-recurring.service/create-payment-from-recurring.service';
+import { CreatePaymentFromRecurringController } from './jobs/create-payment-from-recurring.service/create-payment-from-recurring.controller';
 
 @Module({
   controllers: [
     CreateRecurringPaymentController,
     GetRecurringPaymentByIdController,
     ListRecurringPaymentsController,
+    CreatePaymentFromRecurringController,
   ],
   providers: [
     PrismaService,
     CreateRecurringPaymentService,
     GetRecurringPaymentByIdService,
     ListRecurringPaymentsService,
+
+    // Jobs
+    CreatePaymentFromRecurringService,
 
     // Repo
     RecurringPaymentRepoService,
