@@ -86,7 +86,7 @@ export class CreateRecurringPaymentService {
         },
       );
     } else {
-      const dates = [paymentStartDate];
+      const dates: DateTime<true>[] = [];
       if (paymentStartDate.month === DateTime.now().month)
         dates.push(paymentStartDate.plus({ month: 1 }));
 
