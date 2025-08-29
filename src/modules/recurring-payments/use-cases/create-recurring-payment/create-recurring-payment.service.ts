@@ -56,7 +56,7 @@ export class CreateRecurringPaymentService {
           : PaymentStatus.Pending,
         userId: requester.userId,
         value: payload.singlePaymentValue,
-        paymentDate: paymentStartDate.toISO(),
+        paymentDate: paymentStartDate.set({ hour: 12 }).toISO(),
         observation: payload.numberOfInstallments
           ? `1/${payload.numberOfInstallments}`
           : undefined,
@@ -80,7 +80,7 @@ export class CreateRecurringPaymentService {
               : PaymentStatus.Pending,
             userId: requester.userId,
             value: payload.singlePaymentValue,
-            paymentDate: newPaymentDate.toISO(),
+            paymentDate: newPaymentDate.set({ hour: 12 }).toISO(),
             observation: `${installmentNumber + 1}/${payload.numberOfInstallments}`,
           });
         },
@@ -101,7 +101,7 @@ export class CreateRecurringPaymentService {
             : PaymentStatus.Pending,
           userId: requester.userId,
           value: payload.singlePaymentValue,
-          paymentDate: d.toISO(),
+          paymentDate: d.set({ hour: 12 }).toISO(),
         });
       });
     }
