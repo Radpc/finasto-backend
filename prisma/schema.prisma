@@ -26,7 +26,8 @@ model User {
   payments          Payment[]
   recurringPayments RecurringPayment[]
 
-  families Family[]
+  families    Family[]
+  timeBudgets TimeBudget[]
 }
 
 model Family {
@@ -65,6 +66,7 @@ model Category {
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   recurringPayments RecurringPayment[]
+  timeBudgets       TimeBudget[]
 }
 
 model Tag {
@@ -128,4 +130,18 @@ model RecurringPayment {
 
   tags     Tag[]
   payments Payment[]
+}
+
+model TimeBudget {
+  id          String   @id @default(uuid())
+  startDate   DateTime
+  endDate     DateTime
+  budgetValue Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy  User     @relation(fields: [userId], references: [id])
+  userId     String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
 }
