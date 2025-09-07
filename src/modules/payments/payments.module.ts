@@ -17,12 +17,15 @@ import { GetPaymentByIdService } from './use-cases/get-payment-by-id/get-payment
 import { GetPaymentByIdController } from './use-cases/get-payment-by-id/get-payment-by-id.controller';
 import { UpdatePredictedPaymentsService } from './jobs/update-predicted-payments/update-predicted-payments.service';
 import { UpdatePredictedPaymentsController } from './jobs/update-predicted-payments/update-predicted-payments.controller';
+import { GetPaymentValueSumByPeriodController } from './use-cases/get-payment-value-sum-by-period/get-payment-value-sum-by-period.controller';
+import { GetPaymentValueSumByPeriodService } from './use-cases/get-payment-value-sum-by-period/get-payment-value-sum-by-period.service';
 
 @Module({
   controllers: [
     CreatePaymentController,
     ListPaymentsController,
     RemovePaymentController,
+    GetPaymentValueSumByPeriodController,
     GetPaymentValueSumController,
     GetPaymentByIdController,
     UpdatePaymentController,
@@ -33,6 +36,7 @@ import { UpdatePredictedPaymentsController } from './jobs/update-predicted-payme
     CreatePaymentService,
     ListPaymentsService,
     RemovePaymentService,
+    GetPaymentValueSumByPeriodService,
     GetPaymentValueSumService,
     GetPaymentByIdService,
     UpdatePaymentService,

@@ -1,18 +1,20 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { ListPaymentsQuery } from '../list-payment/list-payments.dto';
 import { IsDateString, IsEnum, IsNotEmpty } from 'class-validator';
+import { DateTime } from 'luxon';
 
 export enum PaymentValuePeriodType {
-  Weekly,
-  Monthly,
-  Yearly,
+  Daily = 'daily',
+  Weekly = 'weekly',
+  Monthly = 'monthly',
+  Yearly = 'yearly',
 }
 
 export class GetPaymentValueByPeriodQuery extends OmitType(ListPaymentsQuery, [
   'page',
   'pageSize',
 ]) {
-  @ApiProperty({ required: false, enum: PaymentValuePeriodType })
+  @ApiProperty({ required: true, enum: PaymentValuePeriodType })
   @IsEnum(PaymentValuePeriodType)
   periodType: PaymentValuePeriodType;
 
@@ -20,7 +22,7 @@ export class GetPaymentValueByPeriodQuery extends OmitType(ListPaymentsQuery, [
   @IsDateString()
   @ApiProperty({
     type: String,
-    example: new Date().toISOString(),
+    example: DateTime.now().startOf('month'),
     required: true,
   })
   since: string;
@@ -29,7 +31,7 @@ export class GetPaymentValueByPeriodQuery extends OmitType(ListPaymentsQuery, [
   @IsDateString()
   @ApiProperty({
     type: String,
-    example: new Date().toISOString(),
+    example: DateTime.now().endOf('month'),
     required: true,
   })
   until: string;

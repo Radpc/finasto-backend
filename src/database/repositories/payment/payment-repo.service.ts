@@ -4,6 +4,17 @@ import { Prisma } from '@prisma/client';
 import { PaymentDomain } from 'src/modules/payments/domain/payment.domain';
 import { PaginatedList } from 'src/types/utils';
 import { DefaultArgs } from '@prisma/client/runtime/library';
+import { PaymentValuePeriodType } from 'src/modules/payments/use-cases/get-payment-value-sum-by-period/get-payment-value-by-period.query';
+import {
+  getPaymentValueSumsByPeriodsSQL,
+  IGetPaymentValueSumsByPeriodsResponse,
+  IGetPaymentValueSymsByPeriodsQuery,
+  IResultByDay,
+  IResultByMonth,
+  IResultByWeek,
+  IResultByYear,
+} from './sql/getPaymentValueSumsByPeriods';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class PaymentRepoService {
@@ -38,6 +49,72 @@ export class PaymentRepoService {
       gain: gainRes._sum.value || 0,
       loss: lossRes._sum.value || 0,
     };
+  }
+
+  async getPaymentValueSumsByPeriods(
+    query: IGetPaymentValueSymsByPeriodsQuery & { requesterId: string },
+  ): Promise<{ from: Date; total: number }[]> {
+    const generatedQuery = getPaymentValueSumsByPeriodsSQL({ query });
+    const res: IGetPaymentValueSumsByPeriodsResponse =
+      await this.prisma.$queryRaw(generatedQuery);
+
+    switch (query.periodType) {
+      case PaymentValuePeriodType.Daily:
+        return (res as IResultByDay[]).map((r) => {
+          return {
+            from: DateTime.local({ zone: query.timezone })
+              .set({
+                day: r.localDay,
+                month: r.localMonth,
+                year: r.localYear,
+              })
+              .startOf('day')
+              .toJSDate(),
+            total: r.sum,
+          };
+        });
+
+      case PaymentValuePeriodType.Weekly:
+        return (res as IResultByWeek[]).map((r) => {
+          return {
+            from: DateTime.local({ zone: query.timezone })
+              .set({
+                weekNumber: r.localWeek,
+                weekYear: r.localYear,
+              })
+              .startOf('week')
+              .toJSDate(),
+            total: r.sum,
+          };
+        });
+
+      case PaymentValuePeriodType.Monthly:
+        return (res as IResultByMonth[]).map((r) => {
+          return {
+            from: DateTime.local({ zone: query.timezone })
+              .set({
+                month: r.localMonth,
+                year: r.localYear,
+              })
+              .startOf('month')
+              .toJSDate(),
+            total: r.sum,
+          };
+        });
+
+      case PaymentValuePeriodType.Yearly:
+        return (res as IResultByYear[]).map((r) => {
+          return {
+            from: DateTime.local({ zone: query.timezone })
+              .set({
+                year: r.localYear,
+              })
+              .startOf('year')
+              .toJSDate(),
+            total: r.sum,
+          };
+        });
+    }
   }
 
   async getPayments(params: {
