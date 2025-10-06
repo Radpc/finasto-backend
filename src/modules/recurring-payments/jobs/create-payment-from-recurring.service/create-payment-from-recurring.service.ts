@@ -57,7 +57,7 @@ export class CreatePaymentFromRecurringService {
     await this.paymentRepository.createPayments(paymentPayloads);
   }
 
-  @Cron('@monthly')
+  @Cron('0 0 1 * *')
   async execute() {
     // Do current month and the next one
     const monthsAhead = 2;

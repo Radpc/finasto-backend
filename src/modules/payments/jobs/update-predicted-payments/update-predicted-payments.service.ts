@@ -8,7 +8,7 @@ import { PaymentStatus } from 'src/modules/payments/domain/payment.domain';
 export class UpdatePredictedPaymentsService {
   constructor(private paymentRepository: PaymentRepoService) {}
 
-  @Cron('@daily')
+  @Cron('0 0 * * *')
   async execute() {
     const today = DateTime.now().endOf('day').toISO();
 
