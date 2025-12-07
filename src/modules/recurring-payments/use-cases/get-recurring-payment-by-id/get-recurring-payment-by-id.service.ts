@@ -1,10 +1,10 @@
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { RecurringPaymentDomain } from '../../domain/recurring-payment.domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { RecurringPaymentRepoService } from 'src/database/repositories/recurring-payment/recurring-payment-repo.service';
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
-  requester: Requester;
+  requester: UserDTO;
   recurringPaymentId: string;
 };
 
@@ -24,7 +24,7 @@ export class GetRecurringPaymentByIdService {
       where: {
         id: input.recurringPaymentId,
         account: {
-          family: { users: { some: { id: input.requester.userId } } },
+          family: { users: { some: { id: input.requester.id } } },
         },
       },
       include: {

@@ -1,13 +1,13 @@
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { UpdatePaymentDTO } from '../../dto/update-payment.dto';
 import { Injectable } from '@nestjs/common';
 import { PaymentRepoService } from 'src/database/repositories/payment/payment-repo.service';
 import { PaymentDomain } from '../../domain/payment.domain';
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
   paymentId: string;
   payload: UpdatePaymentDTO;
-  requester: Requester;
+  requester: UserDTO;
 };
 type Output = {
   data: PaymentDomain;
@@ -24,14 +24,14 @@ export class UpdatePaymentService {
     const res = await this.paymentRepoService.updatePayment({
       where: {
         id: paymentId,
-        account: { family: { users: { some: { id: requester.userId } } } },
+        account: { family: { users: { some: { id: requester.id } } } },
       },
       data: {
         category: payload.categoryId
           ? {
               connect: {
                 id: payload.categoryId,
-                family: { users: { some: { id: requester.userId } } },
+                family: { users: { some: { id: requester.id } } },
               },
             }
           : undefined,
@@ -39,7 +39,7 @@ export class UpdatePaymentService {
           ? {
               connect: payload.tagIds.map((tagId) => ({
                 id: tagId,
-                family: { users: { some: { id: requester.userId } } },
+                family: { users: { some: { id: requester.id } } },
               })),
             }
           : undefined,

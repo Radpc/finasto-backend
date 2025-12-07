@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { CreateTimeBudgetDTO } from '../../dto/create-time-budget.dto';
 import { TimeBudgetDomain } from '../../domain/time-budget.domain';
 import { TimeBudgetRepoService } from 'src/database/repositories/time-budget/time-budget-repo.service';
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
   payload: CreateTimeBudgetDTO;
-  requester: Requester;
+  requester: UserDTO;
 };
 
 type Output = {
@@ -25,7 +25,7 @@ export class CreateTimeBudgetService {
       endDate: payload.endDate,
       budgetValue: payload.budgetValue,
       category: { connect: { id: payload.categoryId } },
-      createdBy: { connect: { id: input.requester.userId } },
+      createdBy: { connect: { id: input.requester.id } },
     });
 
     return { data: result, message: 'Success' };

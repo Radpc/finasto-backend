@@ -1,9 +1,10 @@
 import { Controller, UseGuards, Req, Get, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { GetRecurringPaymentByIdService } from './get-recurring-payment-by-id.service';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
-@UseGuards(UserGuard)
+@UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
 @Controller('recurring-payments')
 @ApiTags('Recurring Payment')
@@ -15,10 +16,10 @@ export class GetRecurringPaymentByIdController {
   @Get(':recurringPaymentId')
   async handle(
     @Param('recurringPaymentId') recurringPaymentId: string,
-    @Req() req: UserRequest,
+    @Req() req: AuthorizedRequest,
   ) {
     const res = await this.getRecurringPaymentByIdService.execute({
-      requester: req.requester,
+      requester: req.user,
       recurringPaymentId: recurringPaymentId,
     });
     return { data: res.data.toDTO(), message: 'Category created' };

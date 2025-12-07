@@ -1,12 +1,13 @@
 import { Body, Controller, Param, Put, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ControllerResponse } from 'src/types/response';
 import { TagDTO } from '../../dto/tag.dto';
 import { UpdateTagService } from './update-tag.service';
 import { UpdateTagDTO } from '../../dto/update-tag.dto';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
-@UseGuards(UserGuard)
+@UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
 @Controller('tags')
 @ApiTags('Tag')
@@ -16,13 +17,13 @@ export class UpdateTagController {
   @Put(':tagId')
   async handle(
     @Body() updateTagDTO: UpdateTagDTO,
-    @Req() req: UserRequest,
+    @Req() req: AuthorizedRequest,
     @Param('tagId') tagId: string,
   ): ControllerResponse<TagDTO> {
     const result = await this.updateTagService.execute({
       tagId,
       updateTagDTO,
-      requesterId: req.requester.userId,
+      requesterId: req.user.id,
     });
     return { data: result.data.toDTO(), message: 'Success' };
   }

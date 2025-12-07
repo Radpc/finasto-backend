@@ -12,6 +12,7 @@ async function bootstrap() {
     .setTitle('Finance.io')
     .setDescription('Your personal finance app')
     .setVersion('1.0')
+    .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'x-api-key')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);

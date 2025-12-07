@@ -3,9 +3,10 @@ import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ListCategoriesService } from './list-categories.service';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
 import { CategoryDTO } from '../../dto/category.dto';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
 export class GetCategoriesParams {
   @IsNotEmpty()
@@ -33,12 +34,12 @@ type IResponse = ControllerResponse<PaginatedResponse<CategoryDTO>>;
 export class ListCategoriesController {
   constructor(private readonly listCategoriesService: ListCategoriesService) {}
 
-  @UseGuards(UserGuard)
+  @UseGuards(ApiKeyAndJwtGuard)
   @ApiBearerAuth()
   @Get()
   async handle(
     @Query() query: GetCategoriesParams,
-    @Req() req: UserRequest,
+    @Req() req: AuthorizedRequest,
   ): IResponse {
     const result = await this.listCategoriesService.execute({
       query: {
@@ -46,7 +47,7 @@ export class ListCategoriesController {
         pageSize: query.pageSize,
         label: query.searchBy,
       },
-      requesterId: req.requester.userId,
+      requesterId: req.user.id,
     });
 
     return {

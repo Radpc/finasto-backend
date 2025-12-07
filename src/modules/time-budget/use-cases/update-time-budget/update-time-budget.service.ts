@@ -1,11 +1,11 @@
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { UpdateTimeBudgetDTO } from '../../dto/update-time-budget.dto';
 import { TimeBudgetDomain } from '../../domain/time-budget.domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TimeBudgetRepoService } from 'src/database/repositories/time-budget/time-budget-repo.service';
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
-  requester: Requester;
+  requester: UserDTO;
   timeBudgetId: string;
   payload: UpdateTimeBudgetDTO;
 };
@@ -25,7 +25,7 @@ export class UpdateTimeBudgetService {
       where: {
         id: timeBudgetId,
         category: {
-          family: { users: { some: { id: requester.userId } } },
+          family: { users: { some: { id: requester.id } } },
         },
       },
       data: {
@@ -34,7 +34,7 @@ export class UpdateTimeBudgetService {
           ? {
               connect: {
                 id: payload.categoryId,
-                family: { users: { some: { id: requester.userId } } },
+                family: { users: { some: { id: requester.id } } },
               },
             }
           : undefined,

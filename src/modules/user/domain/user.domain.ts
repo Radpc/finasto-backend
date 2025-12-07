@@ -66,8 +66,8 @@ export class UserDomain {
     return compare(passwordToCheck, this.password);
   }
 
-  toDTO() {
-    return new UserDTO({
+  toDTO(): UserDTO {
+    return {
       id: this.id,
       email: this.email,
       name: this.name,
@@ -76,6 +76,6 @@ export class UserDomain {
       updatedAt: this.updatedAt.toISOString(),
 
       families: this.families?.map((f) => f.toDTO()),
-    });
+    };
   }
 }

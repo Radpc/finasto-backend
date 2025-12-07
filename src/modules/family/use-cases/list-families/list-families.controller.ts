@@ -1,11 +1,12 @@
 import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { IsOptional, IsString } from 'class-validator';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
 import { PaginatedQuery } from 'src/types/paginated-dto';
 import { FamilyDTO } from '../../dto/family.dto';
 import { ListFamiliesService } from './list-families.service';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
 export class GetFamiliesParams extends PaginatedQuery {
   @IsString()
@@ -21,12 +22,12 @@ type IResponse = ControllerResponse<PaginatedResponse<FamilyDTO>>;
 export class ListFamiliesController {
   constructor(private readonly listFamiliesService: ListFamiliesService) {}
 
-  @UseGuards(UserGuard)
+  @UseGuards(ApiKeyAndJwtGuard)
   @ApiBearerAuth()
   @Get()
   async handle(
     @Query() query: GetFamiliesParams,
-    @Req() req: UserRequest,
+    @Req() req: AuthorizedRequest,
   ): IResponse {
     const result = await this.listFamiliesService.execute({
       query: {
@@ -34,7 +35,7 @@ export class ListFamiliesController {
         pageSize: query.pageSize,
         name: query.name,
       },
-      requesterId: req.requester.userId,
+      requesterId: req.user.id,
     });
 
     return {

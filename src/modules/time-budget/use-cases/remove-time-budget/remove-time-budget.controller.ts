@@ -1,11 +1,12 @@
-import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Param, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ControllerResponse } from 'src/types/response';
 import { TimeBudgetDTO } from '../../dto/time-budget.dto';
 import { RemoveTimeBudgetService } from './remove-time-budget.service';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
-@UseGuards(UserGuard)
+@UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
 @Controller('time-budgets')
 @ApiTags('Time budget')
@@ -17,11 +18,11 @@ export class RemoveTimeBudgetController {
   @Delete(':timeBudgetId')
   async handle(
     @Param('timeBudgetId') timeBudgetId: string,
-    @Req() req: UserRequest,
+    @Req() req: AuthorizedRequest,
   ): ControllerResponse<TimeBudgetDTO> {
     const result = await this.removeTimeBudgetService.execute({
       timeBudgetId,
-      requester: req.requester,
+      requester: req.user,
     });
     return { data: result.data.toDTO(), message: 'Success' };
   }

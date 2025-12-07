@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserRepoService } from 'src/database/repositories/user/user-repo.service';
 import { CreateUserDTO } from '../../dto/create-user.dto';
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { hashSync } from 'bcryptjs';
 import { UserDomain } from '../../domain/user.domain';
+import { UserDTO } from '../../dto/user.dto';
 
 type Input = {
   payload: CreateUserDTO;
-  requester: Requester;
+  requester: UserDTO;
 };
 type Output = {
   data: UserDomain;
@@ -35,7 +35,7 @@ export class CreateUserService {
       families: {
         connect: {
           id: payload.familyId,
-          users: { some: { id: input.requester.userId } },
+          users: { some: { id: input.requester.id } },
         },
       },
     });

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { ListTimeBudgetsQuery } from './list-time-budgets.query';
 import { TimeBudgetDomain } from '../../domain/time-budget.domain';
 import { PaginatedList } from 'src/types/utils';
 import { TimeBudgetRepoService } from 'src/database/repositories/time-budget/time-budget-repo.service';
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
-  requester: Requester;
+  requester: UserDTO;
   query: ListTimeBudgetsQuery;
 };
 type Output = {
@@ -27,7 +27,7 @@ export class ListTimeBudgetService {
       take,
       where: {
         category: {
-          family: { users: { some: { id: requester.userId } } },
+          family: { users: { some: { id: requester.id } } },
         },
         endDate: query.since ? { gte: query.since } : undefined,
         startDate: query.until ? { lte: query.until } : undefined,

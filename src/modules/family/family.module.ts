@@ -7,6 +7,7 @@ import { CreateFamilyService } from './use-cases/create-family/create-family.ser
 import { GetFamilyByIdService } from './use-cases/get-family-by-id/get-family-by-id.service';
 import { ListFamiliesService } from './use-cases/list-families/list-families.service';
 import { FamilyRepoService } from 'src/database/repositories/family/family-repo.service';
+import { UserJwtService } from '../jwt/user-jwt/user-jwt.service';
 
 @Module({
   imports: [PrismaModule],
@@ -19,6 +20,7 @@ import { FamilyRepoService } from 'src/database/repositories/family/family-repo.
     CreateFamilyService,
     GetFamilyByIdService,
     ListFamiliesService,
+    UserJwtService,
 
     // Repo
     FamilyRepoService,

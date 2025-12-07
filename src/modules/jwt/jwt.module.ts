@@ -1,11 +1,14 @@
 import { Global, Module } from '@nestjs/common';
-import { UserJwtService } from './user-jwt/user-jwt.service';
+import { ApiKeyStrategy } from './strategies/apiKey.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { UserRepoService } from 'src/database/repositories/user/user-repo.service';
+import { PrismaModule } from 'src/database/prisma.module';
 
 @Global()
 @Module({
-  imports: [],
+  imports: [PrismaModule],
   controllers: [],
-  providers: [UserJwtService],
-  exports: [UserJwtService],
+  providers: [JwtStrategy, ApiKeyStrategy, UserRepoService],
+  exports: [JwtStrategy, ApiKeyStrategy],
 })
 export class JwtModule {}

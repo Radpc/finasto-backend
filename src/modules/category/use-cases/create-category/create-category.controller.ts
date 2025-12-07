@@ -2,23 +2,24 @@ import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateCategoryDTO } from '../../dto/create-category.dto';
 import { CreateCategoryService } from './create-category.service';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
 @Controller('categories')
 @ApiTags('Category')
 export class CreateCategoryController {
   constructor(private readonly createCategory: CreateCategoryService) {}
 
-  @UseGuards(UserGuard)
+  @UseGuards(ApiKeyAndJwtGuard)
   @ApiBearerAuth()
   @Post()
   async handle(
     @Body() createCategoryDto: CreateCategoryDTO,
-    @Req() req: UserRequest,
+    @Req() req: AuthorizedRequest,
   ) {
     const res = await this.createCategory.execute({
       payload: createCategoryDto,
-      requesterId: req.requester.userId,
+      requesterId: req.user.id,
     });
     return { data: res.data.toDTO(), message: 'Category created' };
   }

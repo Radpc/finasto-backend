@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { PaymentDomain } from '../../domain/payment.domain';
 import { PaymentRepoService } from 'src/database/repositories/payment/payment-repo.service';
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
-  requester: Requester;
+  requester: UserDTO;
   paymentId: string;
 };
 
@@ -22,7 +22,7 @@ export class GetPaymentByIdService {
       where: {
         id: input.paymentId,
         account: {
-          family: { users: { some: { id: input.requester.userId } } },
+          family: { users: { some: { id: input.requester.id } } },
         },
       },
       include: {

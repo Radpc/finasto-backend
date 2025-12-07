@@ -1,12 +1,13 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { CreateAccountDTO } from '../../dto/create-account.dto';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
 import { CreateAccountService } from './create-account.service';
 import { ControllerResponse } from 'src/types/response';
 import { AccountDTO } from '../../dto/account.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
-@UseGuards(UserGuard)
+@UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
 @Controller('accounts')
 @ApiTags('Account')
@@ -16,11 +17,11 @@ export class CreateAccountController {
   @Post()
   async handle(
     @Body() payload: CreateAccountDTO,
-    @Req() req: UserRequest,
+    @Req() req: AuthorizedRequest,
   ): ControllerResponse<AccountDTO> {
     const result = await this.createAccountService.execute({
       payload,
-      requesterId: req.requester.userId,
+      requesterId: req.user.id,
     });
 
     return {

@@ -14,11 +14,12 @@ generator client {
 }
 
 model User {
-  id       String @id @default(uuid())
-  name     String
-  email    String @unique
-  password String
-  role     String
+  id         String  @id @default(uuid())
+  name       String
+  email      String  @unique
+  password   String
+  role       String
+  apiKeyHash String? @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

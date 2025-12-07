@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { GetPaymentValueQuery } from './get-payment-value.query';
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { PaymentRepoService } from 'src/database/repositories/payment/payment-repo.service';
 import { Prisma } from '@prisma/client';
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
   query: GetPaymentValueQuery;
-  requester: Requester;
+  requester: UserDTO;
 };
 type Output = {
   data: {
@@ -38,7 +38,7 @@ export class GetPaymentValueSumService {
       where: {
         account: {
           id: query.accountId,
-          family: { users: { some: { id: requester.userId } } },
+          family: { users: { some: { id: requester.id } } },
         },
         categoryId: query.categoryId,
         status: query.status,

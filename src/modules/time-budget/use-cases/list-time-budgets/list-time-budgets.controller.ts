@@ -1,12 +1,13 @@
 import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ListTimeBudgetsQuery } from './list-time-budgets.query';
 import { ListTimeBudgetService } from './list-time-budgets.service';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
 import { TimeBudgetDTO } from '../../dto/time-budget.dto';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
-@UseGuards(UserGuard)
+@UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
 @Controller('time-budgets')
 @ApiTags('Time budgets')
@@ -15,12 +16,12 @@ export class ListTimeBudgetsController {
 
   @Get()
   async handle(
-    @Req() request: UserRequest,
+    @Req() request: AuthorizedRequest,
     @Query() query: ListTimeBudgetsQuery,
   ): ControllerResponse<PaginatedResponse<TimeBudgetDTO>> {
     const res = await this.listTimeBudgetService.execute({
       query: query,
-      requester: request.requester,
+      requester: request.user,
     });
     return {
       data: {

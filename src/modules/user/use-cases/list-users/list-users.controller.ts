@@ -1,12 +1,13 @@
 import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
 import { UserDTO } from '../../dto/user.dto';
 import { ListUsersService } from './list-users.service';
 import { ListUsersQuery } from './list-users.dto';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
-@UseGuards(UserGuard)
+@UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
 @Controller('users')
 @ApiTags('User')
@@ -16,11 +17,11 @@ export class ListUsersController {
   @Get()
   async handle(
     @Query() query: ListUsersQuery,
-    @Req() req: UserRequest,
+    @Req() req: AuthorizedRequest,
   ): ControllerResponse<PaginatedResponse<UserDTO>> {
     const { data, total } = await this.listUsersService.execute({
       query,
-      requester: req.requester,
+      requester: req.user,
     });
     return {
       data: {

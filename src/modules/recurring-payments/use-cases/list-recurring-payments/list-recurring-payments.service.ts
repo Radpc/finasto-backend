@@ -1,13 +1,13 @@
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { ListRecurringPaymentsQuery } from './list-recurring-payments.dto';
 import { PaginatedList } from 'src/types/utils';
 import { RecurringPaymentDomain } from '../../domain/recurring-payment.domain';
 import { Injectable } from '@nestjs/common';
 import { RecurringPaymentRepoService } from 'src/database/repositories/recurring-payment/recurring-payment-repo.service';
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
   query: ListRecurringPaymentsQuery;
-  requester: Requester;
+  requester: UserDTO;
 };
 type Output = {
   data: PaginatedList<RecurringPaymentDomain>;
@@ -28,7 +28,7 @@ export class ListRecurringPaymentsService {
       where: {
         account: {
           id: query.accountId,
-          family: { users: { some: { id: requester.userId } } },
+          family: { users: { some: { id: requester.id } } },
         },
       },
       skip,

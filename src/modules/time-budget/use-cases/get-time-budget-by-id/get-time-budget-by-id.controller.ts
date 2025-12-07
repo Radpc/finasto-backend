@@ -1,11 +1,12 @@
 import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ControllerResponse } from 'src/types/response';
 import { GetTimeBudgetByIdService } from './get-time-budget-by-id.service';
 import { TimeBudgetDTO } from '../../dto/time-budget.dto';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
-@UseGuards(UserGuard)
+@UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
 @Controller('time-budgets')
 @ApiTags('Time budget')
@@ -17,11 +18,11 @@ export class GetTimeBudgetByIdController {
   @Get(':timeBudgetId')
   async handle(
     @Param('timeBudgetId') timeBudgetId: string,
-    @Req() req: UserRequest,
+    @Req() req: AuthorizedRequest,
   ): ControllerResponse<TimeBudgetDTO> {
     const result = await this.getTimeBudgetByIdService.execute({
       timeBudgetId,
-      requester: req.requester,
+      requester: req.user,
     });
     return { data: result.data.toDTO(), message: 'Success' };
   }

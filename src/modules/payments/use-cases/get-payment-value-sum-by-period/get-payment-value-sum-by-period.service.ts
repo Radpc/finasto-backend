@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import {
-  GetPaymentValueByPeriodQuery,
-  PaymentValuePeriodType,
-} from './get-payment-value-by-period.query';
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
+import { GetPaymentValueByPeriodQuery } from './get-payment-value-by-period.query';
 import { PaymentRepoService } from 'src/database/repositories/payment/payment-repo.service';
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
   query: GetPaymentValueByPeriodQuery;
-  requester: Requester;
+  requester: UserDTO;
   timezone: string;
 };
 type Output = {
@@ -25,7 +22,7 @@ export class GetPaymentValueSumByPeriodService {
 
   async execute({ query, requester, timezone }: Input): Promise<Output> {
     const res = await this.paymentRepoService.getPaymentValueSumsByPeriods({
-      requesterId: requester.userId,
+      requesterId: requester.id,
       periodType: query.periodType,
       since: new Date(query.since),
       until: new Date(query.until),

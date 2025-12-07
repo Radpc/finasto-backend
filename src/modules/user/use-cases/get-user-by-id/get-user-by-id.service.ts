@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepoService } from 'src/database/repositories/user/user-repo.service';
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { UserDomain } from '../../domain/user.domain';
+import { UserDTO } from '../../dto/user.dto';
 
 type Input = {
   userId: string;
-  requester: Requester;
+  requester: UserDTO;
 };
 type Output = {
   data: UserDomain;
@@ -20,7 +20,7 @@ export class GetUserByIdService {
     const result = await this.userRepoService.getUser({
       where: {
         id: input.userId,
-        families: { some: { users: { some: { id: input.requester.userId } } } },
+        families: { some: { users: { some: { id: input.requester.id } } } },
       },
     });
 

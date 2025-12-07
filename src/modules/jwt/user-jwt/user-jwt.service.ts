@@ -1,12 +1,7 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserRole } from 'src/modules/user/domain/user.domain';
-
-export type Requester = {
-  userId: string;
-  role: UserRole;
-};
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 @Injectable()
 export class UserJwtService {
@@ -18,32 +13,15 @@ export class UserJwtService {
     this.jwtSecret = configService.getOrThrow('JWT_USER_SECRET');
   }
 
-  async verifyToken(token: string) {
-    try {
-      const payload: Requester = await this.jwtService.verifyAsync(token, {
-        secret: this.jwtSecret,
-      });
-      return payload;
-    } catch {
-      throw new UnauthorizedException('Invalid user credentials');
-    }
-  }
+  async encodeJWT(payload: UserDTO) {
+    const { id, name, email, role } = payload;
 
-  async safeVerifyToken(token: string) {
-    try {
-      const payload: Requester = await this.jwtService.verifyAsync(token, {
+    return this.jwtService.sign(
+      { id, name, email, role },
+      {
         secret: this.jwtSecret,
-      });
-      return payload;
-    } catch {
-      return;
-    }
-  }
-
-  async encodeJWT(payload: Requester) {
-    return this.jwtService.sign(payload, {
-      secret: this.jwtSecret,
-      expiresIn: '1d',
-    });
+        expiresIn: '1d',
+      },
+    );
   }
 }

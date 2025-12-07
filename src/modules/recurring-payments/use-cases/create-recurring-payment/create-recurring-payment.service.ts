@@ -1,4 +1,3 @@
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { RecurringPaymentDomain } from '../../domain/recurring-payment.domain';
 import { CreateRecurringPaymentDTO } from '../../dto/create-recurring-payment.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
@@ -6,10 +5,11 @@ import { RecurringPaymentRepoService } from 'src/database/repositories/recurring
 import { Prisma } from '@prisma/client';
 import { PaymentStatus } from 'src/modules/payments/domain/payment.domain';
 import { DateTime } from 'luxon';
+import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
   payload: CreateRecurringPaymentDTO;
-  requester: Requester;
+  requester: UserDTO;
 };
 type Output = {
   data: RecurringPaymentDomain;
@@ -54,7 +54,7 @@ export class CreateRecurringPaymentService {
         status: payload.automaticPayment
           ? getPaidStatus(paymentStartDate)
           : PaymentStatus.Pending,
-        userId: requester.userId,
+        userId: requester.id,
         value: payload.singlePaymentValue,
         paymentDate: paymentStartDate.set({ hour: 12 }).toISO(),
         observation: payload.numberOfInstallments
@@ -78,7 +78,7 @@ export class CreateRecurringPaymentService {
             status: payload.automaticPayment
               ? getPaidStatus(newPaymentDate)
               : PaymentStatus.Pending,
-            userId: requester.userId,
+            userId: requester.id,
             value: payload.singlePaymentValue,
             paymentDate: newPaymentDate.set({ hour: 12 }).toISO(),
             observation: `${installmentNumber + 1}/${payload.numberOfInstallments}`,
@@ -99,7 +99,7 @@ export class CreateRecurringPaymentService {
           status: payload.automaticPayment
             ? getPaidStatus(d)
             : PaymentStatus.Pending,
-          userId: requester.userId,
+          userId: requester.id,
           value: payload.singlePaymentValue,
           paymentDate: d.set({ hour: 12 }).toISO(),
         });
@@ -117,23 +117,23 @@ export class CreateRecurringPaymentService {
         account: {
           connect: {
             id: payload.accountId,
-            family: { users: { some: { id: requester.userId } } },
+            family: { users: { some: { id: requester.id } } },
           },
         },
         automaticPayment: payload.automaticPayment,
         tags: {
           connect: payload.tagIds?.map((t) => ({
             id: t,
-            family: { users: { some: { id: requester.userId } } },
+            family: { users: { some: { id: requester.id } } },
           })),
         },
         category: {
           connect: {
             id: payload.categoryId,
-            family: { users: { some: { id: requester.userId } } },
+            family: { users: { some: { id: requester.id } } },
           },
         },
-        createdBy: { connect: { id: requester.userId } },
+        createdBy: { connect: { id: requester.id } },
         payments: { createMany: { data: payments } },
       });
 

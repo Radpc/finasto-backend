@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepoService } from 'src/database/repositories/user/user-repo.service';
-import { Requester } from 'src/modules/jwt/user-jwt/user-jwt.service';
 import { UserDomain } from '../../domain/user.domain';
 import { ListUsersQuery } from './list-users.dto';
 import { PaginatedList } from 'src/types/utils';
+import { UserDTO } from '../../dto/user.dto';
 
 type Input = {
   query: ListUsersQuery;
-  requester: Requester;
+  requester: UserDTO;
 };
 type Output = PaginatedList<UserDomain>;
 
@@ -22,7 +22,7 @@ export class ListUsersService {
     const result = await this.userRepoService.getUsers({
       where: {
         name: query.searchBy ? { contains: query.searchBy } : undefined,
-        families: { some: { users: { some: { id: requester.userId } } } },
+        families: { some: { users: { some: { id: requester.id } } } },
       },
       skip,
       take,

@@ -1,9 +1,9 @@
 import { Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserGuard } from 'src/modules/jwt/user-jwt/user.guard';
 import { CreatePaymentFromRecurringService } from './create-payment-from-recurring.service';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 
-@UseGuards(UserGuard)
+@UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
 @Controller('jobs')
 @ApiTags('Job')

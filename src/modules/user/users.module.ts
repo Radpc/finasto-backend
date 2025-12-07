@@ -9,6 +9,7 @@ import { ListUsersController } from './use-cases/list-users/list-users.controlle
 import { CreateUserService } from './use-cases/create-user/create-user.service';
 import { GetUserByIdService } from './use-cases/get-user-by-id/get-user-by-id.service';
 import { ListUsersService } from './use-cases/list-users/list-users.service';
+import { UserJwtService } from '../jwt/user-jwt/user-jwt.service';
 
 @Module({
   imports: [PrismaModule],
@@ -23,6 +24,7 @@ import { ListUsersService } from './use-cases/list-users/list-users.service';
     CreateUserService,
     GetUserByIdService,
     ListUsersService,
+    UserJwtService,
 
     // Repos
     UserRepoService,

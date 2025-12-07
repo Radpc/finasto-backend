@@ -1,12 +1,13 @@
 import { Body, Controller, Param, Put, Req, UseGuards } from '@nestjs/common';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
 import { ControllerResponse } from 'src/types/response';
 import { AccountDTO } from '../../dto/account.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UpdateAccountDTO } from '../../dto/update-account.dto';
 import { UpdateAccountService } from './update-account.service';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
-@UseGuards(UserGuard)
+@UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
 @Controller('accounts')
 @ApiTags('Account')
@@ -17,11 +18,11 @@ export class UpdateAccountController {
   async handle(
     @Param('accountId') accountId: string,
     @Body() payload: UpdateAccountDTO,
-    @Req() req: UserRequest,
+    @Req() req: AuthorizedRequest,
   ): ControllerResponse<AccountDTO> {
     const result = await this.updateAccountService.execute({
       payload,
-      requesterId: req.requester.userId,
+      requesterId: req.user.id,
       accountId: accountId,
     });
 

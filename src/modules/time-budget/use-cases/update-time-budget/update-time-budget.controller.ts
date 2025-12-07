@@ -1,12 +1,13 @@
 import { Body, Controller, Param, Patch, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ControllerResponse } from 'src/types/response';
 import { TimeBudgetDTO } from '../../dto/time-budget.dto';
 import { UpdateTimeBudgetService } from './update-time-budget.service';
 import { UpdateTimeBudgetDTO } from '../../dto/update-time-budget.dto';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
-@UseGuards(UserGuard)
+@UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
 @Controller('time-budgets')
 @ApiTags('Time budget')
@@ -18,12 +19,12 @@ export class UpdateTimeBudgetController {
   @Patch(':timeBudgetId')
   async handle(
     @Param('timeBudgetId') timeBudgetId: string,
-    @Req() req: UserRequest,
+    @Req() req: AuthorizedRequest,
     @Body() payload: UpdateTimeBudgetDTO,
   ): ControllerResponse<TimeBudgetDTO> {
     const result = await this.updateTimeBudgetService.execute({
       timeBudgetId,
-      requester: req.requester,
+      requester: req.user,
       payload,
     });
     return { data: result.data.toDTO(), message: 'Success' };

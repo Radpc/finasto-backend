@@ -2,9 +2,10 @@ import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreatePaymentService } from './create-payment.service';
 import { CreatePaymentDTO } from '../../dto/create-payment.dto';
-import { UserGuard, UserRequest } from 'src/modules/jwt/user-jwt/user.guard';
+import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
-@UseGuards(UserGuard)
+@UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
 @Controller('payments')
 @ApiTags('Payment')
@@ -13,10 +14,10 @@ export class CreatePaymentController {
 
   @Post()
   async handle(
-    @Req() request: UserRequest,
+    @Req() request: AuthorizedRequest,
     @Body() createPaymentDto: CreatePaymentDTO,
   ) {
-    const requesterId = request.requester.userId;
+    const requesterId = request.user.id;
     const res = await this.createPaymentService.execute({
       payload: createPaymentDto,
       requesterId,

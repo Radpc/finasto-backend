@@ -19,6 +19,14 @@ export class UserRepoService {
     return raw ? UserDomain.fromRaw(raw) : null;
   }
 
+  async findByApiKeyHash(apiKeyHash: string): Promise<UserDomain | null> {
+    const result = await this.prisma.user.findUnique({
+      where: { apiKeyHash },
+    });
+
+    return result ? UserDomain.fromRaw(result) : null;
+  }
+
   async getUsers(params: {
     skip?: number;
     take?: number;
