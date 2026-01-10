@@ -12,9 +12,11 @@ import { AccountModule } from './modules/account/account.module';
 import { FamilyModule } from './modules/family/family.module';
 import { RecurringPaymentsModule } from './modules/recurring-payments/recurring-payments.module';
 import { TimeBudgetModule } from './modules/time-budget/time-budget.module';
+import { LoggingModule } from './modules/logger/logger.module';
 
 @Module({
   imports: [
+    LoggingModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.development', '.env'],

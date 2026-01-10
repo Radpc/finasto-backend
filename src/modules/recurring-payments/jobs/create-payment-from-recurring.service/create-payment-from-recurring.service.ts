@@ -1,10 +1,20 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { Prisma } from '@prisma/client';
 import { DateTime } from 'luxon';
 import { PaymentRepoService } from 'src/database/repositories/payment/payment-repo.service';
 import { RecurringPaymentRepoService } from 'src/database/repositories/recurring-payment/recurring-payment-repo.service';
-import { PaymentStatus } from 'src/modules/payments/domain/payment.domain';
+import {
+  PaymentDomain,
+  PaymentStatus,
+} from 'src/modules/payments/domain/payment.domain';
+import { CreatePaymentService } from 'src/modules/payments/use-cases/create-payment/create-payment.service';
+
+const logger = new Logger(CreatePaymentService.name);
 
 @Injectable()
 export class CreatePaymentFromRecurringService {
@@ -54,7 +64,8 @@ export class CreatePaymentFromRecurringService {
       }));
 
     // Create payments
-    await this.paymentRepository.createPayments(paymentPayloads);
+    const res = await this.paymentRepository.createPayments(paymentPayloads);
+    return res;
   }
 
   @Cron('0 0 1 * *')
@@ -67,10 +78,17 @@ export class CreatePaymentFromRecurringService {
     ];
 
     const now = DateTime.now();
-
+    const totalCreatedPayments: PaymentDomain[] = [];
     for (const m of monthCounting) {
       const monthDate = now.plus({ month: m });
-      await this.updatePaymentsByMonth(monthDate.toISO());
+      const createdPayments = await this.updatePaymentsByMonth(
+        monthDate.toISO(),
+      );
+      totalCreatedPayments.push(...createdPayments);
     }
+
+    logger.log(
+      `Executed create-payment-from-recurring job. ${totalCreatedPayments.length} payments created `,
+    );
   }
 }
