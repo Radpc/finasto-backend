@@ -52,7 +52,7 @@ jobs:
             --log-driver=awslogs \
             --log-opt awslogs-region=sa-east-1 \
             --log-opt awslogs-group=/finasto/api \
-            --log-opt awslogs-stream-prefix=api \
+            --log-opt awslogs-stream=finasto-api \
             radpc/financeio-backend
 
           sudo docker image prune -f
