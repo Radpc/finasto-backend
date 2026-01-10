@@ -56,4 +56,4 @@ jobs:
             radpc/financeio-backend
 
           sudo docker image prune -f
-        EOF 
+          EOF
