@@ -31,6 +31,22 @@ export function validateEnv(config: Env): Env {
     throw new Error('JOBS_TOKEN must be at least 32 characters in production');
   }
 
+  if (Boolean(config.AUTH0_ISSUER_URL) !== Boolean(config.AUTH0_AUDIENCE)) {
+    throw new Error('AUTH0_ISSUER_URL and AUTH0_AUDIENCE must be set together');
+  }
+
+  if (config.AUTH0_ISSUER_URL) {
+    let url: URL;
+    try {
+      url = new URL(config.AUTH0_ISSUER_URL);
+    } catch {
+      throw new Error('AUTH0_ISSUER_URL must be a URL');
+    }
+    if (config.NODE_ENV === 'production' && url.protocol !== 'https:') {
+      throw new Error('AUTH0_ISSUER_URL must use https in production');
+    }
+  }
+
   if (config.PORT && Number.isNaN(Number(config.PORT))) {
     throw new Error('PORT must be a number');
   }

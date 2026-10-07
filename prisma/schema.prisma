@@ -20,6 +20,8 @@ model User {
   password   String
   role       String
   apiKeyHash String? @unique
+  // Auth0 user id ("sub" claim), set the first time the user signs in with Auth0
+  auth0Sub   String? @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

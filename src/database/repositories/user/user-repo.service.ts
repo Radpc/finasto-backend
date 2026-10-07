@@ -27,6 +27,18 @@ export class UserRepoService {
     return result ? UserDomain.fromRaw(result) : null;
   }
 
+  /**
+   * Attaches an Auth0 user id to the user with this email, unless that user
+   * is already linked to an Auth0 identity. Returns whether a row changed.
+   */
+  async linkAuth0Sub(email: string, auth0Sub: string): Promise<boolean> {
+    const { count } = await this.prisma.user.updateMany({
+      where: { email, auth0Sub: null },
+      data: { auth0Sub },
+    });
+    return count === 1;
+  }
+
   async getUsers(params: {
     skip?: number;
     take?: number;

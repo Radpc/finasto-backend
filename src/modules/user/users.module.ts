@@ -9,18 +9,22 @@ import { ListUsersController } from './use-cases/list-users/list-users.controlle
 import { CreateUserService } from './use-cases/create-user/create-user.service';
 import { GetUserByIdService } from './use-cases/get-user-by-id/get-user-by-id.service';
 import { ListUsersService } from './use-cases/list-users/list-users.service';
+import { GetMeController } from './use-cases/get-me/get-me.controller';
+import { GetMeService } from './use-cases/get-me/get-me.service';
 import { UserJwtService } from '../jwt/user-jwt/user-jwt.service';
 
 @Module({
   imports: [PrismaModule],
   controllers: [
     LoginController,
+    GetMeController,
     CreateUserController,
     GetUserByIdController,
     ListUsersController,
   ],
   providers: [
     LoginService,
+    GetMeService,
     CreateUserService,
     GetUserByIdService,
     ListUsersService,

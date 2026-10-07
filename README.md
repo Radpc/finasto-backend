@@ -41,6 +41,8 @@ All configuration comes from environment variables, validated at startup (`src/c
 | `CORS_ORIGINS` | no | Comma-separated allowed origins, default `http://localhost:5173` |
 | `JOBS_TOKEN` | no | Enables `POST /jobs/*` for callers sending it in `x-jobs-token`; disabled when empty |
 | `ENABLE_SWAGGER` | no | `true` serves Swagger in production |
+| `AUTH0_ISSUER_URL` | no | Auth0 tenant URL, e.g. `https://finasto-dev.us.auth0.com/`; enables Auth0 sign-in |
+| `AUTH0_AUDIENCE` | with the above | Identifier of the Finasto API in Auth0, e.g. `https://api.finasto.app` |
 
 Never commit `.env` files or bake them into images. In deployed environments, inject these variables at runtime from a secrets manager.
 
@@ -72,6 +74,16 @@ prisma/
   schema.prisma, migrations/, seed/
 test/                        end-to-end tests
 ```
+
+## Sign-in
+
+The API accepts three kinds of credentials on protected routes, tried in this order:
+
+1. **Auth0 access tokens** (RS256), when `AUTH0_ISSUER_URL` and `AUTH0_AUDIENCE` are set. The first time someone signs in, their verified email from Auth0 is linked to the existing Finasto user with that email. Setup steps: [docs/auth0-setup.md](docs/auth0-setup.md).
+2. **Tokens from `POST /login`** (email and password). Kept for local development until Auth0 sign-in replaces it.
+3. **API keys** in the `x-api-key` header.
+
+`GET /me` returns the signed-in user and their families.
 
 ## Security notes
 
