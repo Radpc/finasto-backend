@@ -24,7 +24,12 @@ export class CreateTimeBudgetService {
       startDate: payload.startDate,
       endDate: payload.endDate,
       budgetValue: payload.budgetValue,
-      category: { connect: { id: payload.categoryId } },
+      category: {
+        connect: {
+          id: payload.categoryId,
+          family: { users: { some: { id: input.requester.id } } },
+        },
+      },
       createdBy: { connect: { id: input.requester.id } },
     });
 

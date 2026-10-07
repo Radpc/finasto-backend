@@ -37,7 +37,10 @@ All configuration comes from environment variables, validated at startup (`src/c
 | `DATABASE_URL` | yes | MySQL connection string used by Prisma |
 | `JWT_USER_SECRET` | yes | Secret for signing user JWTs; at least 32 characters when `NODE_ENV=production` |
 | `PORT` | no | HTTP port, default 3000 |
-| `NODE_ENV` | no | `production` enables production checks |
+| `NODE_ENV` | no | `production` enables production checks and hides Swagger |
+| `CORS_ORIGINS` | no | Comma-separated allowed origins, default `http://localhost:5173` |
+| `JOBS_TOKEN` | no | Enables `POST /jobs/*` for callers sending it in `x-jobs-token`; disabled when empty |
+| `ENABLE_SWAGGER` | no | `true` serves Swagger in production |
 
 Never commit `.env` files or bake them into images. In deployed environments, inject these variables at runtime from a secrets manager.
 
@@ -69,6 +72,13 @@ prisma/
   schema.prisma, migrations/, seed/
 test/                        end-to-end tests
 ```
+
+## Security notes
+
+- Every query is scoped to the families the requester belongs to; `test/tenant-isolation.e2e-spec.ts` checks that ids from another family behave like ids that do not exist (404).
+- `/login` allows 5 attempts per minute per client; other routes 120 per minute.
+- API keys are stored as SHA-256 hashes (`src/utils/api-key.ts`); generate them with `generateApiKey()` and show them once.
+- Security headers come from `helmet`.
 
 ## Docker
 

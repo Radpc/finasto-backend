@@ -2,25 +2,19 @@ import Strategy from 'passport-headerapikey';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepoService } from 'src/database/repositories/user/user-repo.service';
-import { apiKeyEncrypt } from 'src/utils/encryption';
+import { hashApiKey } from 'src/utils/api-key';
 
 @Injectable()
 export class ApiKeyStrategy extends PassportStrategy(Strategy, 'x-api-key') {
   async validate(apiKey: any, done: any) {
-    let encryptedApiKey = '';
-
-    try {
-      encryptedApiKey = apiKeyEncrypt(apiKey);
-    } catch (err) {
+    if (typeof apiKey !== 'string' || !apiKey) {
       return done(new UnauthorizedException(), null);
     }
 
-    if (!apiKey) return done(new UnauthorizedException(), null);
-
-    const user = await this.userRepo.findByApiKeyHash(encryptedApiKey);
+    const user = await this.userRepo.findByApiKeyHash(hashApiKey(apiKey));
     if (!user) return done(new UnauthorizedException(), null);
 
-    done(null, { user });
+    done(null, user.toDTO());
   }
 
   constructor(private readonly userRepo: UserRepoService) {

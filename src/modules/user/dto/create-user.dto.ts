@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsString, IsUUID } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsString,
+  IsUUID,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { UserRole } from '../domain/user.domain';
 
 export class CreateUserDTO {
@@ -12,8 +19,10 @@ export class CreateUserDTO {
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ minLength: 8 })
   @IsString()
+  @MinLength(8)
+  @MaxLength(72) // bcrypt ignores bytes beyond 72
   password: string;
 
   @ApiProperty()

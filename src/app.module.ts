@@ -1,4 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './modules/category/categories.module';
 import { PrismaModule } from './database/prisma.module';
@@ -14,6 +17,7 @@ import { TimeBudgetModule } from './modules/time-budget/time-budget.module';
 import { LoggingModule } from './modules/logger/logger.module';
 import { HealthModule } from './modules/health/health.module';
 import { validateEnv } from './config/env.validation';
+import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 
 @Module({
   imports: [
@@ -23,6 +27,9 @@ import { validateEnv } from './config/env.validation';
       envFilePath: ['.env.development', '.env'],
       validate: validateEnv,
     }),
+    ScheduleModule.forRoot(),
+    // Default limit for every route; stricter limits are set per route.
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
     OriginalJwtModule.register({
       global: true,
     }),
@@ -39,6 +46,13 @@ import { validateEnv } from './config/env.validation';
     HealthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_FILTER, useClass: PrismaExceptionFilter },
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({ whitelist: true, transform: true }),
+    },
+  ],
 })
 export class AppModule {}

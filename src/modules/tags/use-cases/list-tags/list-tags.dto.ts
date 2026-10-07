@@ -1,20 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+import { PaginatedQuery } from 'src/types/paginated-dto';
 
-export class ListTagsQuery {
-  @IsNotEmpty()
-  @Type(() => Number)
-  @IsNumber()
-  @ApiProperty({ type: Number, example: 1, required: true })
-  page: number;
-
-  @IsNotEmpty()
-  @Type(() => Number)
-  @IsNumber()
-  @ApiProperty({ type: Number, example: 1, required: true })
-  pageSize: number;
-
+export class ListTagsQuery extends PaginatedQuery {
   @IsOptional()
   @IsString()
   @ApiProperty({
