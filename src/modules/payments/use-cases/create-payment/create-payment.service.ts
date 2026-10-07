@@ -51,7 +51,12 @@ export class CreatePaymentService {
     }
 
     const result = await this.paymentRepository.createPayment({
-      account: { connect: { id: input.payload.accountId } },
+      account: {
+        connect: {
+          id: input.payload.accountId,
+          family: { users: { some: { id: input.requesterId } } },
+        },
+      },
       paymentDate: input.payload.paymentDate,
       description: input.payload.description,
       createdBy: { connect: { id: input.requesterId } },

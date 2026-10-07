@@ -61,8 +61,25 @@ interface IProps {
   query: IGetPaymentValueSymsByPeriodsQuery;
 }
 
+/**
+ * The offset is interpolated into SQL text (CONVERT_TZ cannot take it as a
+ * repeated bound parameter here), so only strict `+HH:MM` / `-HH:MM` values
+ * are allowed through.
+ */
+export const toSqlTimezoneOffset = (timezone: string): string => {
+  if (timezone === 'Z') return '+00:00';
+  const match = /^([+-])(\d{2})(?::?(\d{2}))?$/.exec(timezone);
+  if (!match) throw new Error(`Invalid timezone offset: ${timezone}`);
+  const [, sign, hours, minutes = '00'] = match;
+  if (Number(hours) > 14 || Number(minutes) > 59) {
+    throw new Error(`Invalid timezone offset: ${timezone}`);
+  }
+  return `${sign}${hours}:${minutes}`;
+};
+
 const getSelect = (query: IGetPaymentValueSymsByPeriodsQuery) => {
-  const { timezone, periodType } = query;
+  const { periodType } = query;
+  const timezone = toSqlTimezoneOffset(query.timezone);
   const selects = [`SUM(value) as sum`];
   const localPaymentDate = `CONVERT_TZ(paymentDate, '+00:00', '${timezone}')`;
   const separators: string[] = [];

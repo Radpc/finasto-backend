@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
-import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+import { PaginatedQuery } from 'src/types/paginated-dto';
 import { ListCategoriesService } from './list-categories.service';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
@@ -8,19 +8,7 @@ import { ControllerResponse, PaginatedResponse } from 'src/types/response';
 import { CategoryDTO } from '../../dto/category.dto';
 import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
-export class GetCategoriesParams {
-  @IsNotEmpty()
-  @Type(() => Number)
-  @IsNumber()
-  @ApiProperty({ type: Number, example: 1, required: true })
-  page: number;
-
-  @IsNotEmpty()
-  @Type(() => Number)
-  @IsNumber()
-  @ApiProperty({ type: Number, example: 1, required: true })
-  pageSize: number;
-
+export class GetCategoriesParams extends PaginatedQuery {
   @IsString()
   @IsOptional()
   @ApiProperty({ type: String, example: 'Exemplo', required: false })

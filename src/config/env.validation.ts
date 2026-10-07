@@ -23,6 +23,14 @@ export function validateEnv(config: Env): Env {
     );
   }
 
+  if (
+    config.NODE_ENV === 'production' &&
+    config.JOBS_TOKEN &&
+    config.JOBS_TOKEN.length < 32
+  ) {
+    throw new Error('JOBS_TOKEN must be at least 32 characters in production');
+  }
+
   if (config.PORT && Number.isNaN(Number(config.PORT))) {
     throw new Error('PORT must be a number');
   }
