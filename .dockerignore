@@ -1,0 +1,11 @@
+# Never send secrets or local state into the image build context
+.env
+.env.*
+!.env.example
+.git
+.github
+node_modules
+dist
+coverage
+test
+*.log

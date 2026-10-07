@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './modules/category/categories.module';
 import { PrismaModule } from './database/prisma.module';
@@ -13,6 +12,8 @@ import { FamilyModule } from './modules/family/family.module';
 import { RecurringPaymentsModule } from './modules/recurring-payments/recurring-payments.module';
 import { TimeBudgetModule } from './modules/time-budget/time-budget.module';
 import { LoggingModule } from './modules/logger/logger.module';
+import { HealthModule } from './modules/health/health.module';
+import { validateEnv } from './config/env.validation';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { LoggingModule } from './modules/logger/logger.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.development', '.env'],
+      validate: validateEnv,
     }),
     OriginalJwtModule.register({
       global: true,
@@ -34,8 +36,9 @@ import { LoggingModule } from './modules/logger/logger.module';
     FamilyModule,
     RecurringPaymentsModule,
     TimeBudgetModule,
+    HealthModule,
   ],
   controllers: [],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}

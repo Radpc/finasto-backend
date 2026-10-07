@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: finasto
+          MYSQL_USER: finasto
+          MYSQL_PASSWORD: finasto
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -proot"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      DATABASE_URL: mysql://finasto:finasto@127.0.0.1:3306/finasto
+      JWT_USER_SECRET: ci-only-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run lint:check
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx prisma migrate deploy
+      - run: npm run test:e2e
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image (not pushed)
+        run: docker build -t finasto-api:ci .
+      - name: Image must not contain env files
+        run: |
+          if docker run --rm finasto-api:ci sh -c 'ls -a /app | grep -E "^\.env"'; then
+            echo "An .env file was found in the image" && exit 1
+          fi

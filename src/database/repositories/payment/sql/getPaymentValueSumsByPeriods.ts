@@ -157,7 +157,7 @@ const getWhere = (query: IGetPaymentValueSymsByPeriodsQuery): string => {
   return 'WHERE ' + whereStatements.join(' AND ');
 };
 
-const getJoins = (query: IGetPaymentValueSymsByPeriodsQuery): string => {
+const getJoins = (): string => {
   const joins = [
     'JOIN Account on Account.id = accountId',
     'JOIN Family on Family.id = Account.familyId',
@@ -173,8 +173,8 @@ export const getPaymentValueSumsByPeriodsSQL = ({
 }: IProps): Prisma.Sql => {
   const res = Prisma.raw(`
     ${getSelect(query)}
-    FROM financeio.Payment
-    ${getJoins(query)}
+    FROM Payment
+    ${getJoins()}
     ${getWhere(query)}
     ${getGroupBy(query.periodType)}
     `);

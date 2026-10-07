@@ -7,7 +7,7 @@ type Input = {
   categoryId: string;
   payload: UpdateCategoryDto;
 };
-type Output = {};
+type Output = Awaited<ReturnType<CategoryRepoService['updateCategory']>>;
 
 @Injectable()
 export class UpdateCategoryService {

@@ -8,7 +8,7 @@ interface IProps {
   updatedAt: Date;
 }
 
-type TagWithIncludes = Tag & {};
+type TagWithIncludes = Tag;
 
 export class TagDomain {
   id: string;

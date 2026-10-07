@@ -1,73 +1,80 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Finasto API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+REST API for Finasto, a shared household cost-control app. Families share accounts, categories and tags, and record payments, recurring payments and time budgets.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Built with NestJS 10, Prisma 5 and MySQL 8. Interactive API docs (Swagger) are served at `/api`.
 
-## Description
+## Run locally
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
+Requirements: Node 22 and Docker (for the database).
 
 ```bash
-$ npm install
+# 1. Start MySQL (user/password/database: finasto)
+docker compose up -d
+
+# 2. Configure the API
+cp .env.example .env
+
+# 3. Install, create the schema and load demo data
+npm ci
+npx prisma migrate deploy
+npx prisma db seed          # demo login: admin@email.com / 12345 (local only)
+
+# 4. Start in watch mode
+npm run start:dev
 ```
 
-## Running the app
+- API: http://localhost:3000
+- Swagger UI: http://localhost:3000/api
+- Health check: http://localhost:3000/health
+
+## Configuration
+
+All configuration comes from environment variables, validated at startup (`src/config/env.validation.ts`). The app refuses to start if a required value is missing.
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `DATABASE_URL` | yes | MySQL connection string used by Prisma |
+| `JWT_USER_SECRET` | yes | Secret for signing user JWTs; at least 32 characters when `NODE_ENV=production` |
+| `PORT` | no | HTTP port, default 3000 |
+| `NODE_ENV` | no | `production` enables production checks |
+
+Never commit `.env` files or bake them into images. In deployed environments, inject these variables at runtime from a secrets manager.
+
+## Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run start:dev` | Start with reload |
+| `npm run build` | Compile to `dist/` |
+| `npm run lint:check` / `npm run lint` | Check / fix lint and formatting |
+| `npm run typecheck` | TypeScript check without emitting |
+| `npm test` | Unit tests |
+| `npm run test:e2e` | End-to-end tests (needs the database from `docker compose`) |
+
+## Project structure
+
+```
+src/
+  main.ts                    bootstrap: validation pipe, CORS, Swagger
+  app.module.ts              wires config and feature modules
+  config/                    environment validation
+  database/                  Prisma service and repositories
+  modules/<feature>/
+    domain/                  entity classes (fromRaw / toDTO)
+    dto/                     request validation (class-validator)
+    use-cases/<name>/        one controller + one service per use case
+    jobs/                    scheduled jobs and their manual triggers
+prisma/
+  schema.prisma, migrations/, seed/
+test/                        end-to-end tests
+```
+
+## Docker
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+docker build -t finasto-api .
+docker run -p 3000:3000 --env-file .env finasto-api
 ```
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+The image contains compiled code and production dependencies only, runs as a non-root user, and never contains `.env` files. Database migrations are run separately with `npx prisma migrate deploy` before starting a new version.
