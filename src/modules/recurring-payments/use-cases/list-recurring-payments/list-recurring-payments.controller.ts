@@ -4,6 +4,7 @@ import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ListRecurringPaymentsService } from './list-recurring-payments.service';
 import { ListRecurringPaymentsQuery } from './list-recurring-payments.dto';
 import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import { toPage } from 'src/common/pagination';
 
 @UseGuards(ApiKeyAndJwtGuard)
 @ApiBearerAuth()
@@ -19,19 +20,14 @@ export class ListRecurringPaymentsController {
     @Query() query: ListRecurringPaymentsQuery,
     @Req() req: AuthorizedRequest,
   ) {
-    const {
-      data: { data, total },
-      message,
-    } = await this.listRecurringPaymentsService.execute({
+    const { data, total } = await this.listRecurringPaymentsService.execute({
       requester: req.user,
       query,
     });
-    return {
-      data: {
-        items: data.map((d) => d.toDTO()),
-        pagination: { page: query.page, total: total },
-      },
-      message,
-    };
+    return toPage(
+      data.map((d) => d.toDTO()),
+      total,
+      query,
+    );
   }
 }

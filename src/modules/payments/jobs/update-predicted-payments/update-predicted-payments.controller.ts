@@ -15,6 +15,5 @@ export class UpdatePredictedPaymentsController {
   @Post('/update-predicted-payments')
   async handle() {
     await this.updatePredictedPaymentsService.execute();
-    return { data: null, message: 'Job executed' };
   }
 }

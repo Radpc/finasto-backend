@@ -9,10 +9,7 @@ type Input = {
   query: ListRecurringPaymentsQuery;
   requester: UserDTO;
 };
-type Output = {
-  data: PaginatedList<RecurringPaymentDomain>;
-  message: 'Success';
-};
+type Output = PaginatedList<RecurringPaymentDomain>;
 
 @Injectable()
 export class ListRecurringPaymentsService {
@@ -35,6 +32,6 @@ export class ListRecurringPaymentsService {
       take,
     });
 
-    return { data: res, message: 'Success' };
+    return res;
   }
 }

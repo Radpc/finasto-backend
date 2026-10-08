@@ -1,14 +1,13 @@
-interface Pagination {
-  total: number;
+export interface Pagination {
   page: number;
+  pageSize: number;
+  total: number;
 }
 
 export interface PaginatedResponse<T> {
-  pagination: Pagination;
   items: T[];
+  pagination: Pagination;
 }
 
-export type ControllerResponse<T> = Promise<{
-  data: T;
-  message?: string;
-}>;
+/** What a controller returns; the EnvelopeInterceptor sends it as `{ data }`. */
+export type ControllerResponse<T> = Promise<T>;

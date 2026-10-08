@@ -188,7 +188,8 @@ describe('Tenant isolation (e2e)', () => {
         familyId: b.familyId,
         role: 'familyHead',
       })
-      .expect(403);
+      .expect(403)
+      .expect((res) => expect(res.body.code).toBe('FAMILY_HEAD_ONLY'));
   });
 
   it('job endpoints reject user tokens', async () => {

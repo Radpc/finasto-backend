@@ -23,9 +23,6 @@ export class GetPaymentByIdController {
       paymentId,
       requester: req.user,
     });
-    return {
-      data: res.data.toDTO(),
-      message: 'Success',
-    };
+    return res.toDTO();
   }
 }

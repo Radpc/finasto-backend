@@ -27,6 +27,6 @@ export class UpdateTimeBudgetController {
       requester: req.user,
       payload,
     });
-    return { data: result.data.toDTO(), message: 'Success' };
+    return result.toDTO();
   }
 }

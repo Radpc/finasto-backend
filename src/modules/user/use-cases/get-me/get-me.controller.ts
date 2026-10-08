@@ -19,6 +19,6 @@ export class GetMeController {
     const result = await this.getMeService.execute({
       requesterId: req.user.id,
     });
-    return { data: result.data.toDTO(), message: 'Success' };
+    return result.toDTO();
   }
 }

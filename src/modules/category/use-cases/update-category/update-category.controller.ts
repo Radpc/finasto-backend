@@ -12,15 +12,16 @@ export class UpdateCategoryController {
   @UseGuards(ApiKeyAndJwtGuard)
   @ApiBearerAuth()
   @Patch(':id')
-  handle(
+  async handle(
     @Param('id') id: string,
     @Req() req: AuthorizedRequest,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    return this.categoriesService.execute({
+    const category = await this.categoriesService.execute({
       categoryId: id,
       payload: updateCategoryDto,
       requesterId: req.user.id,
     });
+    return category.toDTO();
   }
 }

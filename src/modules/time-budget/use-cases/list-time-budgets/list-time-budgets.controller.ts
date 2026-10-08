@@ -4,6 +4,7 @@ import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ListTimeBudgetsQuery } from './list-time-budgets.query';
 import { ListTimeBudgetService } from './list-time-budgets.service';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
+import { toPage } from 'src/common/pagination';
 import { TimeBudgetDTO } from '../../dto/time-budget.dto';
 import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
@@ -23,12 +24,10 @@ export class ListTimeBudgetsController {
       query: query,
       requester: request.user,
     });
-    return {
-      data: {
-        items: res.data.data.map((b) => b.toDTO()),
-        pagination: { page: query.page, total: res.data.total },
-      },
-      message: 'Payment created',
-    };
+    return toPage(
+      res.data.map((b) => b.toDTO()),
+      res.total,
+      query,
+    );
   }
 }

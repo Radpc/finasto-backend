@@ -4,6 +4,9 @@ import {
   PaymentStatus,
 } from 'src/modules/payments/domain/payment.domain';
 import { PaymentValuePeriodType } from 'src/modules/payments/use-cases/get-payment-value-sum-by-period/get-payment-value-by-period.query';
+import { HttpStatus } from '@nestjs/common';
+import { AppException } from 'src/common/errors/app.exception';
+import { ErrorCode } from 'src/common/errors/error-code';
 
 export interface IResultByDay {
   sum: number;
@@ -66,13 +69,20 @@ interface IProps {
  * repeated bound parameter here), so only strict `+HH:MM` / `-HH:MM` values
  * are allowed through.
  */
+const invalidTimezone = () =>
+  new AppException(
+    ErrorCode.InvalidTimezone,
+    HttpStatus.BAD_REQUEST,
+    'Invalid timezone offset',
+  );
+
 export const toSqlTimezoneOffset = (timezone: string): string => {
   if (timezone === 'Z') return '+00:00';
   const match = /^([+-])(\d{2})(?::?(\d{2}))?$/.exec(timezone);
-  if (!match) throw new Error(`Invalid timezone offset: ${timezone}`);
+  if (!match) throw invalidTimezone();
   const [, sign, hours, minutes = '00'] = match;
   if (Number(hours) > 14 || Number(minutes) > 59) {
-    throw new Error(`Invalid timezone offset: ${timezone}`);
+    throw invalidTimezone();
   }
   return `${sign}${hours}:${minutes}`;
 };

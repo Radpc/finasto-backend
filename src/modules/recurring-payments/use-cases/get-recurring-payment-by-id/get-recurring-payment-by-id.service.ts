@@ -8,10 +8,7 @@ type Input = {
   recurringPaymentId: string;
 };
 
-type Output = {
-  data: RecurringPaymentDomain;
-  message: 'Success';
-};
+type Output = RecurringPaymentDomain;
 
 @Injectable()
 export class GetRecurringPaymentByIdService {
@@ -37,6 +34,6 @@ export class GetRecurringPaymentByIdService {
 
     if (!result) throw new NotFoundException();
 
-    return { data: result, message: 'Success' };
+    return result;
   }
 }

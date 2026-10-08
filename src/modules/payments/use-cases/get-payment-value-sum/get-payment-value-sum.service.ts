@@ -9,11 +9,8 @@ type Input = {
   requester: UserDTO;
 };
 type Output = {
-  data: {
-    gain: number;
-    loss: number;
-  };
-  message: 'Success';
+  gain: number;
+  loss: number;
 };
 
 @Injectable()
@@ -62,6 +59,6 @@ export class GetPaymentValueSumService {
       },
     });
 
-    return { data: res, message: 'Success' };
+    return res;
   }
 }

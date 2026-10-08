@@ -41,9 +41,6 @@ export class GetPaymentValueSumByPeriodController {
       requester: req.user,
       timezone: getTimezoneFromISO(query.since) || '+00:00',
     });
-    return {
-      data: res.data,
-      message: 'Success',
-    };
+    return res;
   }
 }

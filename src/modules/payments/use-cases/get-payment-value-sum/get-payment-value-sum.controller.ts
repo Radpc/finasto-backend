@@ -25,9 +25,6 @@ export class GetPaymentValueSumController {
       query,
       requester: req.user,
     });
-    return {
-      data: res.data,
-      message: 'Success',
-    };
+    return res;
   }
 }

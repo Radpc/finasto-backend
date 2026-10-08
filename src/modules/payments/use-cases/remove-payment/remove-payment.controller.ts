@@ -23,9 +23,6 @@ export class RemovePaymentController {
       paymentId,
       requesterId: req.user.id,
     });
-    return {
-      data: res.toDTO(),
-      message: 'Success',
-    };
+    return res.toDTO();
   }
 }

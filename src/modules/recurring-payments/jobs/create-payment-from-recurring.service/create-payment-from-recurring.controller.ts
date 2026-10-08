@@ -15,6 +15,5 @@ export class CreatePaymentFromRecurringController {
   @Post('/create-payments-from-open-recurring')
   async handle() {
     await this.createPaymentFromRecurringService.execute();
-    return { data: null, message: 'Job executed' };
   }
 }
