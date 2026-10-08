@@ -1,12 +1,14 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Post, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreatePaymentService } from './create-payment.service';
 import { CreatePaymentDTO } from '../../dto/create-payment.dto';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
-@UseGuards(ApiKeyAndJwtGuard)
-@ApiBearerAuth()
+@FamilyScoped()
 @Controller('payments')
 @ApiTags('Payment')
 export class CreatePaymentController {
@@ -14,11 +16,13 @@ export class CreatePaymentController {
 
   @Post()
   async handle(
+    @FamilyId() familyId: string,
     @Req() request: AuthorizedRequest,
     @Body() createPaymentDto: CreatePaymentDTO,
   ) {
     const requesterId = request.user.id;
     const res = await this.createPaymentService.execute({
+      familyId,
       payload: createPaymentDto,
       requesterId,
     });

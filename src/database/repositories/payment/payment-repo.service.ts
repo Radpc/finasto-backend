@@ -15,31 +15,59 @@ import {
   IResultByYear,
 } from './sql/getPaymentValueSumsByPeriods';
 import { DateTime } from 'luxon';
+import {
+  connectInFamily,
+  connectManyInFamily,
+  familyScope,
+  inScope,
+  uniqueInScope,
+} from '../../family-scope';
 
+type CreateInput = Omit<
+  Prisma.PaymentCreateInput,
+  'account' | 'category' | 'tags'
+> & { accountId: string; categoryId: string; tagIds?: string[] };
+
+type UpdateInput = Omit<Prisma.PaymentUpdateInput, 'category' | 'tags'> & {
+  categoryId?: string;
+  tagIds?: string[];
+};
+
+/**
+ * Every method works inside one family, given as the first argument, except
+ * the ones named "AcrossFamilies", which are for scheduled jobs.
+ */
 @Injectable()
 export class PaymentRepoService {
   constructor(private prisma: PrismaService) {}
 
-  async getPayment(options: {
-    where: Prisma.PaymentWhereUniqueInput;
-    include?: Prisma.PaymentInclude<DefaultArgs>;
-  }): Promise<PaymentDomain | null> {
+  async getPayment(
+    familyId: string,
+    options: {
+      where: Prisma.PaymentWhereUniqueInput;
+      include?: Prisma.PaymentInclude<DefaultArgs>;
+    },
+  ): Promise<PaymentDomain | null> {
     const raw = await this.prisma.payment.findUnique({
-      where: options.where,
+      where: uniqueInScope(options.where, familyScope.payment(familyId)),
       include: options.include,
     });
 
     return raw ? PaymentDomain.fromRaw(raw) : null;
   }
 
-  async getPaymentValueSums({ where }: { where?: Prisma.PaymentWhereInput }) {
+  async getPaymentValueSums(
+    familyId: string,
+    params: { where?: Prisma.PaymentWhereInput },
+  ) {
+    const where = inScope(params.where, familyScope.payment(familyId));
     const gains = this.prisma.payment.aggregate({
-      where: { ...where, AND: [{ value: { gte: 0 } }] },
+      where: { AND: [where, { value: { gte: 0 } }] },
       _sum: { value: true },
     });
 
     const losses = this.prisma.payment.aggregate({
-      where: { ...where, AND: [{ value: { lte: 0 } }] },
+      where: { AND: [where, { value: { lte: 0 } }] },
       _sum: { value: true },
     });
 
@@ -52,9 +80,10 @@ export class PaymentRepoService {
   }
 
   async getPaymentValueSumsByPeriods(
-    query: IGetPaymentValueSymsByPeriodsQuery & { requesterId: string },
+    familyId: string,
+    query: IGetPaymentValueSymsByPeriodsQuery,
   ): Promise<{ from: Date; total: number }[]> {
-    const generatedQuery = getPaymentValueSumsByPeriodsSQL({ query });
+    const generatedQuery = getPaymentValueSumsByPeriodsSQL({ familyId, query });
     const res: IGetPaymentValueSumsByPeriodsResponse =
       await this.prisma.$queryRaw(generatedQuery);
 
@@ -117,42 +146,78 @@ export class PaymentRepoService {
     }
   }
 
-  async getPayments(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.PaymentWhereUniqueInput;
-    where?: Prisma.PaymentWhereInput;
-    orderBy?: Prisma.PaymentOrderByWithRelationInput;
-    include?: Prisma.PaymentInclude<DefaultArgs>;
-  }): Promise<PaginatedList<PaymentDomain>> {
-    const { skip, take, cursor, where, orderBy, include } = params;
-
-    const query = {
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-      include,
-    } satisfies Prisma.PaymentFindManyArgs;
+  async getPayments(
+    familyId: string,
+    params: {
+      skip?: number;
+      take?: number;
+      where?: Prisma.PaymentWhereInput;
+      orderBy?: Prisma.PaymentOrderByWithRelationInput;
+      include?: Prisma.PaymentInclude<DefaultArgs>;
+    },
+  ): Promise<PaginatedList<PaymentDomain>> {
+    const { skip, take, orderBy, include } = params;
+    const where = inScope(params.where, familyScope.payment(familyId));
 
     const [raws, count] = await this.prisma.$transaction([
-      this.prisma.payment.findMany(query),
-      this.prisma.payment.count({ where: query.where }),
+      this.prisma.payment.findMany({ skip, take, where, orderBy, include }),
+      this.prisma.payment.count({ where }),
     ]);
 
     return { data: raws.map(PaymentDomain.fromRaw), total: count };
   }
 
-  async createPayment(data: Prisma.PaymentCreateInput): Promise<PaymentDomain> {
+  async createPayment(
+    familyId: string,
+    { accountId, categoryId, tagIds, ...data }: CreateInput,
+  ): Promise<PaymentDomain> {
     const raw = await this.prisma.payment.create({
-      data,
+      data: {
+        ...data,
+        account: connectInFamily(familyId, accountId),
+        category: connectInFamily(familyId, categoryId),
+        tags: connectManyInFamily(familyId, tagIds ?? []),
+      },
     });
 
     return PaymentDomain.fromRaw(raw);
   }
 
-  async createPayments(
+  async updatePayment(
+    familyId: string,
+    params: {
+      where: Prisma.PaymentWhereUniqueInput;
+      data: UpdateInput;
+    },
+  ): Promise<PaymentDomain> {
+    const { categoryId, tagIds, ...data } = params.data;
+
+    const raw = await this.prisma.payment.update({
+      data: {
+        ...data,
+        category: categoryId
+          ? connectInFamily(familyId, categoryId)
+          : undefined,
+        tags: tagIds ? connectManyInFamily(familyId, tagIds) : undefined,
+      },
+      where: uniqueInScope(params.where, familyScope.payment(familyId)),
+    });
+    return PaymentDomain.fromRaw(raw);
+  }
+
+  async deletePayment(
+    familyId: string,
+    where: Prisma.PaymentWhereUniqueInput,
+  ): Promise<PaymentDomain> {
+    const raw = await this.prisma.payment.delete({
+      where: uniqueInScope(where, familyScope.payment(familyId)),
+    });
+
+    return PaymentDomain.fromRaw(raw);
+  }
+
+  /** For scheduled jobs only: writes payments of any family. */
+  async createPaymentsAcrossFamilies(
     data: Prisma.PaymentCreateManyInput[],
   ): Promise<PaymentDomain[]> {
     const raw = await this.prisma.$transaction(
@@ -161,40 +226,12 @@ export class PaymentRepoService {
     return raw.map(PaymentDomain.fromRaw);
   }
 
-  async updatePayment(params: {
-    where: Prisma.PaymentWhereUniqueInput;
-    data: Prisma.PaymentUpdateInput;
-  }): Promise<PaymentDomain> {
-    const { where, data } = params;
-
-    const raw = await this.prisma.payment.update({
-      data,
-      where,
-    });
-    return PaymentDomain.fromRaw(raw);
-  }
-
-  async updatePayments(params: {
+  /** For scheduled jobs only: updates payments of any family. */
+  async updatePaymentsAcrossFamilies(params: {
     where: Prisma.PaymentWhereInput;
-    data: Prisma.PaymentUpdateInput;
+    data: Prisma.PaymentUpdateManyMutationInput;
   }): Promise<{ updated: number }> {
-    const { where, data } = params;
-
-    const raw = await this.prisma.payment.updateMany({
-      data,
-      where,
-    });
-
+    const raw = await this.prisma.payment.updateMany(params);
     return { updated: raw.count };
-  }
-
-  async deletePayment(
-    where: Prisma.PaymentWhereUniqueInput,
-  ): Promise<PaymentDomain> {
-    const raw = await this.prisma.payment.delete({
-      where,
-    });
-
-    return PaymentDomain.fromRaw(raw);
   }
 }

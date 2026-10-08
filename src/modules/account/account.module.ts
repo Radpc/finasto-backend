@@ -8,9 +8,7 @@ import { GetAccountByIdService } from './use-cases/get-account-by-id/get-account
 import { ListAccountsService } from './use-cases/list-accounts/list-accounts.service';
 import { UpdateAccountService } from './use-cases/update-account/update-account.service';
 import { PrismaModule } from 'src/database/prisma.module';
-import { CheckUserFamilyPermissionService } from '../family/providers/check-user-family-permission.service';
 import { AccountRepoService } from 'src/database/repositories/account/account-repo.service';
-import { FamilyRepoService } from 'src/database/repositories/family/family-repo.service';
 
 @Module({
   imports: [PrismaModule],
@@ -28,10 +26,8 @@ import { FamilyRepoService } from 'src/database/repositories/family/family-repo.
 
     // Repo
     AccountRepoService,
-    FamilyRepoService,
 
     // Extra
-    CheckUserFamilyPermissionService,
   ],
 })
 export class AccountModule {}

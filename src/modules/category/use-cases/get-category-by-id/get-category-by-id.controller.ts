@@ -1,21 +1,22 @@
-import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { GetCategoryByIdService } from './get-category-by-id.service';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
 @Controller('categories')
 @ApiTags('Category')
 export class GetCategoryByIdController {
   constructor(private readonly getCategory: GetCategoryByIdService) {}
 
-  @UseGuards(ApiKeyAndJwtGuard)
-  @ApiBearerAuth()
+  @FamilyScoped()
   @Get(':id')
-  async handle(@Param('id') id: string, @Req() req: AuthorizedRequest) {
+  async handle(@FamilyId() familyId: string, @Param('id') id: string) {
     const category = await this.getCategory.execute({
+      familyId,
       categoryId: id,
-      requesterId: req.user.id,
     });
 
     return category.toDTO();

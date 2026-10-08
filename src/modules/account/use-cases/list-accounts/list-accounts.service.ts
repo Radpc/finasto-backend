@@ -5,8 +5,8 @@ import { AccountDomain } from '../../domain/account.domain';
 import { AccountRepoService } from 'src/database/repositories/account/account-repo.service';
 
 type Input = {
+  familyId: string;
   query: ListAccountsQuery;
-  requesterId: string;
 };
 type Output = PaginatedList<AccountDomain>;
 
@@ -20,10 +20,9 @@ export class ListAccountsService {
     const take = query.pageSize;
     const skip = take * (query.page - 1);
 
-    const res = await this.accountRepository.getAccounts({
+    const res = await this.accountRepository.getAccounts(input.familyId, {
       where: {
         name: query.searchBy ? { contains: query.searchBy } : undefined,
-        family: { users: { some: { id: input.requesterId } } },
       },
       skip,
       take,

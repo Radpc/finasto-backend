@@ -1,15 +1,16 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
 import { toPage } from 'src/common/pagination';
 import { TagDTO } from '../../dto/tag.dto';
 import { ListTagsService } from './list-tags.service';
 import { ListTagsQuery } from './list-tags.dto';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
-@UseGuards(ApiKeyAndJwtGuard)
-@ApiBearerAuth()
+@FamilyScoped()
 @Controller('tags')
 @ApiTags('Tag')
 export class ListTagsController {
@@ -17,12 +18,12 @@ export class ListTagsController {
 
   @Get()
   async handle(
+    @FamilyId() familyId: string,
     @Query() query: ListTagsQuery,
-    @Req() req: AuthorizedRequest,
   ): ControllerResponse<PaginatedResponse<TagDTO>> {
     const result = await this.listTagsService.execute({
+      familyId,
       query,
-      requesterId: req.user.id,
     });
     return toPage(
       result.data.map((d) => d.toDTO()),

@@ -6,8 +6,8 @@ import { PaymentDomain } from '../../domain/payment.domain';
 import { PaginatedList } from 'src/types/utils';
 
 type Input = {
+  familyId: string;
   query: ListPaymentsQuery;
-  requesterId: string;
 };
 type Output = PaginatedList<PaymentDomain>;
 
@@ -15,7 +15,7 @@ type Output = PaginatedList<PaymentDomain>;
 export class ListPaymentsService {
   constructor(private paymentRepository: PaymentRepoService) {}
 
-  async execute({ query, requesterId }: Input): Promise<Output> {
+  async execute({ familyId, query }: Input): Promise<Output> {
     const take = query.pageSize;
     const skip = take * (query.page - 1);
 
@@ -32,12 +32,9 @@ export class ListPaymentsService {
       recurringPaymentWhere = { id: {} };
     }
 
-    const res = await this.paymentRepository.getPayments({
+    const res = await this.paymentRepository.getPayments(familyId, {
       where: {
-        account: {
-          id: query.accountId,
-          family: { users: { some: { id: requesterId } } },
-        },
+        accountId: query.accountId,
         categoryId: query.categoryId,
         status: query.status,
         tags: query.tagIds ? { some: { id: { in: query.tagIds } } } : undefined,

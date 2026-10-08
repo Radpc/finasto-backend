@@ -3,8 +3,8 @@ import { PaymentRepoService } from 'src/database/repositories/payment/payment-re
 import { PaymentDomain } from '../../domain/payment.domain';
 
 type Input = {
+  familyId: string;
   paymentId: string;
-  requesterId: string;
 };
 type Output = PaymentDomain;
 
@@ -13,10 +13,12 @@ export class RemovePaymentService {
   constructor(private paymentRepository: PaymentRepoService) {}
 
   async execute(input: Input): Promise<Output> {
-    const deletedPayment = await this.paymentRepository.deletePayment({
-      id: input.paymentId,
-      account: { family: { users: { some: { id: input.requesterId } } } },
-    });
+    const deletedPayment = await this.paymentRepository.deletePayment(
+      input.familyId,
+      {
+        id: input.paymentId,
+      },
+    );
 
     return deletedPayment;
   }

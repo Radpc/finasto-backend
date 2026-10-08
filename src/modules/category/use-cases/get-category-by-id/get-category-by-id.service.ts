@@ -3,8 +3,8 @@ import { CategoryRepoService } from 'src/database/repositories/category/category
 import { CategoryDomain } from '../../domain/category.domain';
 
 type Input = {
+  familyId: string;
   categoryId: string;
-  requesterId: string;
 };
 
 type Output = CategoryDomain;
@@ -14,9 +14,8 @@ export class GetCategoryByIdService {
   constructor(private categoryRepository: CategoryRepoService) {}
 
   async execute(input: Input): Promise<Output> {
-    const category = await this.categoryRepository.getCategory({
+    const category = await this.categoryRepository.getCategory(input.familyId, {
       id: input.categoryId,
-      family: { users: { some: { id: input.requesterId } } },
     });
 
     if (!category) throw new NotFoundException();

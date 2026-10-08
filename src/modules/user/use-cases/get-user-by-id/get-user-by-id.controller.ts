@@ -1,13 +1,14 @@
-import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ControllerResponse } from 'src/types/response';
 import { UserDTO } from '../../dto/user.dto';
 import { GetUserByIdService } from './get-user-by-id.service';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
-@UseGuards(ApiKeyAndJwtGuard)
-@ApiBearerAuth()
+@FamilyScoped()
 @Controller('users')
 @ApiTags('User')
 export class GetUserByIdController {
@@ -15,12 +16,12 @@ export class GetUserByIdController {
 
   @Get(':userId')
   async handle(
+    @FamilyId() familyId: string,
     @Param('userId') userId: string,
-    @Req() req: AuthorizedRequest,
   ): ControllerResponse<UserDTO> {
     const result = await this.getUserByIdService.execute({
+      familyId,
       userId,
-      requester: req.user,
     });
     return result.toDTO();
   }

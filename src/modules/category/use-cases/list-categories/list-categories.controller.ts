@@ -1,13 +1,15 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { IsOptional, IsString } from 'class-validator';
 import { PaginatedQuery } from 'src/types/paginated-dto';
 import { ListCategoriesService } from './list-categories.service';
-import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
 import { toPage } from 'src/common/pagination';
 import { CategoryDTO } from '../../dto/category.dto';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
 export class GetCategoriesParams extends PaginatedQuery {
   @IsString()
@@ -23,20 +25,19 @@ type IResponse = ControllerResponse<PaginatedResponse<CategoryDTO>>;
 export class ListCategoriesController {
   constructor(private readonly listCategoriesService: ListCategoriesService) {}
 
-  @UseGuards(ApiKeyAndJwtGuard)
-  @ApiBearerAuth()
+  @FamilyScoped()
   @Get()
   async handle(
+    @FamilyId() familyId: string,
     @Query() query: GetCategoriesParams,
-    @Req() req: AuthorizedRequest,
   ): IResponse {
     const result = await this.listCategoriesService.execute({
+      familyId,
       query: {
         page: query.page,
         pageSize: query.pageSize,
         label: query.searchBy,
       },
-      requesterId: req.user.id,
     });
 
     return toPage(
