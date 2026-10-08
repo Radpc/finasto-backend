@@ -1,6 +1,7 @@
 import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
+import { toPage } from 'src/common/pagination';
 import { AccountDTO } from '../../dto/account.dto';
 import { ListAccountsQuery } from './list-accounts.dto';
 import { ListAccountsService } from './list-accounts.service';
@@ -24,12 +25,10 @@ export class ListAccountController {
       requesterId: req.user.id,
     });
 
-    return {
-      message: 'Success',
-      data: {
-        items: result.data.map((r) => r.toDTO()),
-        pagination: { page: listAccountQuery.page, total: result.total },
-      },
-    };
+    return toPage(
+      result.data.map((r) => r.toDTO()),
+      result.total,
+      listAccountQuery,
+    );
   }
 }

@@ -26,9 +26,6 @@ export class UpdateAccountController {
       accountId: accountId,
     });
 
-    return {
-      data: result.data.toDTO(),
-      message: 'Success',
-    };
+    return result.toDTO();
   }
 }

@@ -23,6 +23,6 @@ export class CreateTagController {
       createTagDTO,
       requesterId: req.user.id,
     });
-    return { data: result.data.toDTO(), message: 'Success' };
+    return result.toDTO();
   }
 }

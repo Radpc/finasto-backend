@@ -24,6 +24,6 @@ export class GetTimeBudgetByIdController {
       timeBudgetId,
       requester: req.user,
     });
-    return { data: result.data.toDTO(), message: 'Success' };
+    return result.toDTO();
   }
 }

@@ -5,6 +5,7 @@ import { ListCategoriesService } from './list-categories.service';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
+import { toPage } from 'src/common/pagination';
 import { CategoryDTO } from '../../dto/category.dto';
 import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 
@@ -38,12 +39,10 @@ export class ListCategoriesController {
       requesterId: req.user.id,
     });
 
-    return {
-      data: {
-        items: result.data.data.map((c) => c.toDTO()),
-        pagination: { page: query.page, total: result.data.total },
-      },
-      message: 'Success',
-    };
+    return toPage(
+      result.data.map((c) => c.toDTO()),
+      result.total,
+      query,
+    );
   }
 }

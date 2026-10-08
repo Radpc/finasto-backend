@@ -135,7 +135,8 @@ describe('Auth0 sign-in (e2e)', () => {
   it('refuses an unverified email', async () => {
     const user = await createUser('unverified');
     userInfo = { email: user.email, email_verified: false };
-    await me(sign({ sub: `auth0|unverified-${run}` })).expect(403);
+    const res = await me(sign({ sub: `auth0|unverified-${run}` })).expect(403);
+    expect(res.body.code).toBe('EMAIL_NOT_VERIFIED');
 
     const stored = await prisma.user.findUnique({ where: { id: user.id } });
     expect(stored?.auth0Sub).toBeNull();
@@ -144,7 +145,8 @@ describe('Auth0 sign-in (e2e)', () => {
   it('does not move an account to a second Auth0 identity', async () => {
     const user = await createUser('taken', `auth0|taken-${run}`);
     userInfo = { email: user.email, email_verified: true };
-    await me(sign({ sub: `auth0|intruder-${run}` })).expect(403);
+    const res = await me(sign({ sub: `auth0|intruder-${run}` })).expect(403);
+    expect(res.body.code).toBe('NO_ACCOUNT_FOR_EMAIL');
 
     const stored = await prisma.user.findUnique({ where: { id: user.id } });
     expect(stored?.auth0Sub).toBe(`auth0|taken-${run}`);
@@ -152,7 +154,8 @@ describe('Auth0 sign-in (e2e)', () => {
 
   it('refuses an email with no Finasto account', async () => {
     userInfo = { email: `nobody-${run}@test.local`, email_verified: true };
-    await me(sign({ sub: `auth0|nobody-${run}` })).expect(403);
+    const res = await me(sign({ sub: `auth0|nobody-${run}` })).expect(403);
+    expect(res.body.code).toBe('NO_ACCOUNT_FOR_EMAIL');
   });
 
   it.each([

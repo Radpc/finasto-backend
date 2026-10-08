@@ -6,10 +6,7 @@ type Input = {
   tagId: string;
   requesterId: string;
 };
-type Output = {
-  data: TagDomain;
-  message: 'Success';
-};
+type Output = TagDomain;
 
 @Injectable()
 export class GetTagByIdService {
@@ -23,6 +20,6 @@ export class GetTagByIdService {
 
     if (!newTag) throw new NotFoundException();
 
-    return { data: newTag, message: 'Success' };
+    return newTag;
   }
 }

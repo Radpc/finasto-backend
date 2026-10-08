@@ -3,7 +3,7 @@ import { UserRepoService } from 'src/database/repositories/user/user-repo.servic
 import { UserDomain } from '../../domain/user.domain';
 
 type Input = { requesterId: string };
-type Output = { data: UserDomain; message: 'Success' };
+type Output = UserDomain;
 
 @Injectable()
 export class GetMeService {
@@ -17,6 +17,6 @@ export class GetMeService {
 
     if (!result) throw new NotFoundException();
 
-    return { data: result, message: 'Success' };
+    return result;
   }
 }

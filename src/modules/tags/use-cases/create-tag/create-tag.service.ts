@@ -7,10 +7,7 @@ type Input = {
   createTagDTO: CreateTagDTO;
   requesterId: string;
 };
-type Output = {
-  data: TagDomain;
-  message: 'Success';
-};
+type Output = TagDomain;
 
 @Injectable()
 export class CreateTagService {
@@ -27,6 +24,6 @@ export class CreateTagService {
       },
     });
 
-    return { data: newTag, message: 'Success' };
+    return newTag;
   }
 }

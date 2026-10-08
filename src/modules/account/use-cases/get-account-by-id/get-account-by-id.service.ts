@@ -6,10 +6,7 @@ type Input = {
   accountId: string;
   requesterId: string;
 };
-type Output = {
-  data: AccountDomain;
-  message: 'Success';
-};
+type Output = AccountDomain;
 
 @Injectable()
 export class GetAccountByIdService {
@@ -22,6 +19,6 @@ export class GetAccountByIdService {
     });
 
     if (!account) throw new NotFoundException();
-    return { data: account, message: 'Success' };
+    return account;
   }
 }

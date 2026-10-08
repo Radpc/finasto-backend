@@ -7,10 +7,7 @@ type Input = {
   requester: UserDTO;
   timeBudgetId: string;
 };
-type Output = {
-  data: TimeBudgetDomain;
-  message: 'Success';
-};
+type Output = TimeBudgetDomain;
 
 export class RemoveTimeBudgetService {
   constructor(private readonly timeBudgetRepo: TimeBudgetRepoService) {}
@@ -22,9 +19,6 @@ export class RemoveTimeBudgetService {
     });
 
     if (!res) throw new NotFoundException();
-    return {
-      data: res,
-      message: 'Success',
-    };
+    return res;
   }
 }

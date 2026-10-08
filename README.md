@@ -63,6 +63,7 @@ Never commit `.env` files or bake them into images. In deployed environments, in
 src/
   main.ts                    bootstrap: validation pipe, CORS, Swagger
   app.module.ts              wires config and feature modules
+  common/                    error codes and filter, response envelope, pagination
   config/                    environment validation
   database/                  Prisma service and repositories
   modules/<feature>/
@@ -74,6 +75,30 @@ prisma/
   schema.prisma, migrations/, seed/
 test/                        end-to-end tests
 ```
+
+## Responses and errors
+
+Controllers return plain values; `EnvelopeInterceptor` sends them as `{ "data": ... }`. Lists use `toPage()` from `src/common/pagination.ts`:
+
+```json
+{ "data": { "items": [], "pagination": { "page": 1, "pageSize": 20, "total": 0 } } }
+```
+
+Every error, from any layer, has the same body (`src/common/errors/all-exceptions.filter.ts`):
+
+```json
+{
+  "statusCode": 400,
+  "code": "VALIDATION_FAILED",
+  "message": "The request has invalid fields",
+  "details": [{ "field": "label", "constraints": { "isNotEmpty": "label should not be empty" } }]
+}
+```
+
+- `code` is stable and is what clients translate; `message` is English for developers. The full list is `ErrorCode` in `src/common/errors/error-code.ts`. Add codes, never rename them.
+- For an error the client should tell apart, throw `new AppException(ErrorCode.X, status, message)`. Plain Nest exceptions get a code from their status (404 is `NOT_FOUND`, and so on).
+- Prisma "record not found" becomes 404 and unique-constraint failures become 409. Anything unexpected is logged and returned as `500 INTERNAL` without its message.
+- `@RawResponse()` skips the envelope; only `/health` uses it.
 
 ## Sign-in
 

@@ -10,10 +10,7 @@ type Input = {
   requesterId: string;
 };
 
-type Output = {
-  data: PaymentDomain;
-  message: 'Success';
-};
+type Output = PaymentDomain;
 
 @Injectable()
 export class CreatePaymentService {
@@ -70,6 +67,6 @@ export class CreatePaymentService {
       },
     });
 
-    return { data: result, message: 'Success' };
+    return result;
   }
 }

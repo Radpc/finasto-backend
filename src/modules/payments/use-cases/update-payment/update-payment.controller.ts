@@ -26,9 +26,6 @@ export class UpdatePaymentController {
       payload,
       requester: req.user,
     });
-    return {
-      data: res.data.toDTO(),
-      message: 'Success',
-    };
+    return res.toDTO();
   }
 }

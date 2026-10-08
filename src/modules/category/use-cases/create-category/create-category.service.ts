@@ -7,10 +7,7 @@ type Input = {
   payload: CreateCategoryDTO;
   requesterId: string;
 };
-type Output = {
-  data: CategoryDomain;
-  message: 'Success';
-};
+type Output = CategoryDomain;
 
 @Injectable()
 export class CreateCategoryService {
@@ -27,9 +24,6 @@ export class CreateCategoryService {
       },
     });
 
-    return {
-      data: res,
-      message: 'Success',
-    };
+    return res;
   }
 }

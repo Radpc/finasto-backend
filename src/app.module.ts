@@ -1,5 +1,5 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
@@ -17,7 +17,9 @@ import { TimeBudgetModule } from './modules/time-budget/time-budget.module';
 import { LoggingModule } from './modules/logger/logger.module';
 import { HealthModule } from './modules/health/health.module';
 import { validateEnv } from './config/env.validation';
-import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
+import { AllExceptionsFilter } from './common/errors/all-exceptions.filter';
+import { validationExceptionFactory } from './common/errors/validation';
+import { EnvelopeInterceptor } from './common/http/envelope.interceptor';
 
 @Module({
   imports: [
@@ -48,10 +50,15 @@ import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter'
   controllers: [],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
-    { provide: APP_FILTER, useClass: PrismaExceptionFilter },
+    { provide: APP_FILTER, useClass: AllExceptionsFilter },
+    { provide: APP_INTERCEPTOR, useClass: EnvelopeInterceptor },
     {
       provide: APP_PIPE,
-      useValue: new ValidationPipe({ whitelist: true, transform: true }),
+      useValue: new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        exceptionFactory: validationExceptionFactory,
+      }),
     },
   ],
 })

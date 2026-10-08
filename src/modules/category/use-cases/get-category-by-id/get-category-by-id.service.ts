@@ -7,10 +7,7 @@ type Input = {
   requesterId: string;
 };
 
-type Output = {
-  data: CategoryDomain;
-  message: 'Success';
-};
+type Output = CategoryDomain;
 
 @Injectable()
 export class GetCategoryByIdService {
@@ -24,6 +21,6 @@ export class GetCategoryByIdService {
 
     if (!category) throw new NotFoundException();
 
-    return { data: category, message: 'Success' };
+    return category;
   }
 }

@@ -3,6 +3,7 @@ import { IsOptional, IsString } from 'class-validator';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
+import { toPage } from 'src/common/pagination';
 import { PaginatedQuery } from 'src/types/paginated-dto';
 import { FamilyDTO } from '../../dto/family.dto';
 import { ListFamiliesService } from './list-families.service';
@@ -38,12 +39,10 @@ export class ListFamiliesController {
       requesterId: req.user.id,
     });
 
-    return {
-      data: {
-        items: result.data.data.map((c) => c.toDTO()),
-        pagination: { page: query.page, total: result.data.total },
-      },
-      message: 'Success',
-    };
+    return toPage(
+      result.data.map((c) => c.toDTO()),
+      result.total,
+      query,
+    );
   }
 }

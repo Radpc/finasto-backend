@@ -9,12 +9,9 @@ type Input = {
   timezone: string;
 };
 type Output = {
-  data: {
-    from: Date;
-    total: number;
-  }[];
-  message: 'Success';
-};
+  from: Date;
+  total: number;
+}[];
 
 @Injectable()
 export class GetPaymentValueSumByPeriodService {
@@ -39,6 +36,6 @@ export class GetPaymentValueSumByPeriodService {
       status: query.status,
       tagIds: query.tagIds,
     });
-    return { data: res, message: 'Success' };
+    return res;
   }
 }

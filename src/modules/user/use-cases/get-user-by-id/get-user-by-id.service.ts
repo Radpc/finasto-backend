@@ -7,10 +7,7 @@ type Input = {
   userId: string;
   requester: UserDTO;
 };
-type Output = {
-  data: UserDomain;
-  message: 'Success';
-};
+type Output = UserDomain;
 
 @Injectable()
 export class GetUserByIdService {
@@ -26,9 +23,6 @@ export class GetUserByIdService {
 
     if (!result) throw new NotFoundException();
 
-    return {
-      data: result,
-      message: 'Success',
-    };
+    return result;
   }
 }

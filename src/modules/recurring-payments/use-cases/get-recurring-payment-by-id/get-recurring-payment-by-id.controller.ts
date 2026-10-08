@@ -22,6 +22,6 @@ export class GetRecurringPaymentByIdController {
       requester: req.user,
       recurringPaymentId: recurringPaymentId,
     });
-    return { data: res.data.toDTO(), message: 'Category created' };
+    return res.toDTO();
   }
 }

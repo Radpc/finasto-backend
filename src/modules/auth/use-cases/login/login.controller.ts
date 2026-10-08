@@ -26,6 +26,6 @@ export class LoginController {
   @Post('/login')
   async handle(@Body() { email, password }: LoginDTO) {
     const res = await this.loginService.execute(email, password);
-    return { data: res, message: 'Login success' };
+    return res;
   }
 }

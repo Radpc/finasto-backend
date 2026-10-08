@@ -6,10 +6,7 @@ type Input = {
   familyId: string;
   userId: string;
 };
-type Output = {
-  data: FamilyDomain;
-  message: 'Success';
-};
+type Output = FamilyDomain;
 
 @Injectable()
 export class CheckUserFamilyPermissionService {
@@ -23,9 +20,6 @@ export class CheckUserFamilyPermissionService {
 
     if (!family) throw new NotFoundException();
 
-    return {
-      data: family,
-      message: 'Success',
-    };
+    return family;
   }
 }

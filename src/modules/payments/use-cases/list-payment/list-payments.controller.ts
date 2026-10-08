@@ -4,6 +4,7 @@ import { ApiBearerAuth, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { ListPaymentsService } from './list-payments.service';
 import { ListPaymentsQuery } from './list-payments.dto';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
+import { toPage } from 'src/common/pagination';
 import { PaymentDTO } from '../../dto/payment.dto';
 import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
@@ -25,12 +26,10 @@ export class ListPaymentsController {
       query,
       requesterId: req.user.id,
     });
-    return {
-      data: {
-        items: data.map((d) => d.toDTO()),
-        pagination: { page: query.page, total: total },
-      },
-      message: 'Success',
-    };
+    return toPage(
+      data.map((d) => d.toDTO()),
+      total,
+      query,
+    );
   }
 }

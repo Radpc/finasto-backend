@@ -1,9 +1,11 @@
 import {
-  ForbiddenException,
+  HttpStatus,
   Injectable,
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
+import { AppException } from 'src/common/errors/app.exception';
+import { ErrorCode } from 'src/common/errors/error-code';
 import { UserRepoService } from 'src/database/repositories/user/user-repo.service';
 import { UserDomain } from 'src/modules/user/domain/user.domain';
 
@@ -38,7 +40,11 @@ export class Auth0UserService {
       params.accessToken,
     );
     if (!info.email || info.email_verified !== true) {
-      throw new ForbiddenException('Verify your email address to sign in');
+      throw new AppException(
+        ErrorCode.EmailNotVerified,
+        HttpStatus.FORBIDDEN,
+        'Verify your email address to sign in',
+      );
     }
 
     await this.userRepo.linkAuth0Sub(info.email, params.sub);
@@ -49,7 +55,9 @@ export class Auth0UserService {
       where: { auth0Sub: params.sub },
     });
     if (!user) {
-      throw new ForbiddenException(
+      throw new AppException(
+        ErrorCode.NoAccountForEmail,
+        HttpStatus.FORBIDDEN,
         'There is no Finasto account for this email',
       );
     }
