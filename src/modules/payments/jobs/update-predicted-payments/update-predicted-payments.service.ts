@@ -18,7 +18,7 @@ export class UpdatePredictedPaymentsService {
   async execute() {
     const today = DateTime.now().endOf('day').toISO();
 
-    const res = await this.paymentRepository.updatePayments({
+    const res = await this.paymentRepository.updatePaymentsAcrossFamilies({
       data: { status: PaymentStatus.Paid },
       where: { status: PaymentStatus.Predicted, paymentDate: { lte: today } },
     });

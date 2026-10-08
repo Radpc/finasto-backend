@@ -5,8 +5,8 @@ import { ListTagsQuery } from './list-tags.dto';
 import { PaginatedList } from 'src/types/utils';
 
 type Input = {
+  familyId: string;
   query: ListTagsQuery;
-  requesterId: string;
 };
 type Output = PaginatedList<TagDomain>;
 
@@ -18,11 +18,10 @@ export class ListTagsService {
     const take = input.query.pageSize;
     const skip = take * (input.query.page - 1);
 
-    return this.tagRepository.getTags({
+    return this.tagRepository.getTags(input.familyId, {
       take,
       skip,
       where: {
-        family: { users: { some: { id: input.requesterId } } },
         label: input.query.searchBy
           ? { contains: input.query.searchBy }
           : undefined,

@@ -6,7 +6,7 @@ import { AccountRepoService } from 'src/database/repositories/account/account-re
 type Input = {
   accountId: string;
   payload: UpdateAccountDTO;
-  requesterId: string;
+  familyId: string;
 };
 type Output = AccountDomain;
 
@@ -15,15 +15,15 @@ export class UpdateAccountService {
   constructor(private readonly accountRepoService: AccountRepoService) {}
 
   async execute(input: Input): Promise<Output> {
-    const account = await this.accountRepoService.updateAccount({
-      where: {
-        id: input.accountId,
-        family: { users: { some: { id: input.requesterId } } },
+    const account = await this.accountRepoService.updateAccount(
+      input.familyId,
+      {
+        where: { id: input.accountId },
+        data: {
+          name: input.payload.name,
+        },
       },
-      data: {
-        name: input.payload.name,
-      },
-    });
+    );
 
     return account;
   }

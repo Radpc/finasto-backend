@@ -4,8 +4,8 @@ import { CreateTagDTO } from '../../dto/create-tag.dto';
 import { TagDomain } from '../../domain/tag.domain';
 
 type Input = {
+  familyId: string;
   createTagDTO: CreateTagDTO;
-  requesterId: string;
 };
 type Output = TagDomain;
 
@@ -14,16 +14,8 @@ export class CreateTagService {
   constructor(private readonly tagRepository: TagRepoService) {}
 
   async execute(input: Input): Promise<Output> {
-    const newTag = await this.tagRepository.createTag({
+    return this.tagRepository.createTag(input.familyId, {
       label: input.createTagDTO.label,
-      family: {
-        connect: {
-          id: input.createTagDTO.familyId,
-          users: { some: { id: input.requesterId } },
-        },
-      },
     });
-
-    return newTag;
   }
 }

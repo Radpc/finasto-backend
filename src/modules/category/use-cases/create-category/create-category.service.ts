@@ -4,8 +4,8 @@ import { CreateCategoryDTO } from '../../dto/create-category.dto';
 import { CategoryDomain } from '../../domain/category.domain';
 
 type Input = {
+  familyId: string;
   payload: CreateCategoryDTO;
-  requesterId: string;
 };
 type Output = CategoryDomain;
 
@@ -14,16 +14,8 @@ export class CreateCategoryService {
   constructor(private categoryRepository: CategoryRepoService) {}
 
   async execute(input: Input): Promise<Output> {
-    const res = await this.categoryRepository.createCategory({
+    return this.categoryRepository.createCategory(input.familyId, {
       label: input.payload.label,
-      family: {
-        connect: {
-          id: input.payload.familyId,
-          users: { some: { id: input.requesterId } },
-        },
-      },
     });
-
-    return res;
   }
 }

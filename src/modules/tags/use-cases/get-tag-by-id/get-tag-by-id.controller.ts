@@ -1,13 +1,14 @@
-import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ControllerResponse } from 'src/types/response';
 import { TagDTO } from '../../dto/tag.dto';
 import { GetTagByIdService } from './get-tag-by-id.service';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
-@UseGuards(ApiKeyAndJwtGuard)
-@ApiBearerAuth()
+@FamilyScoped()
 @Controller('tags')
 @ApiTags('Tag')
 export class GetTagByIdController {
@@ -15,12 +16,12 @@ export class GetTagByIdController {
 
   @Get(':tagId')
   async handle(
+    @FamilyId() familyId: string,
     @Param('tagId') tagId: string,
-    @Req() req: AuthorizedRequest,
   ): ControllerResponse<TagDTO> {
     const result = await this.getTagByIdService.execute({
+      familyId,
       tagId,
-      requesterId: req.user.id,
     });
     return result.toDTO();
   }

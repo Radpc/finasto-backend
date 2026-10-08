@@ -1,11 +1,17 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, IsUUID, IsOptional } from 'class-validator';
 
 export class CreateAccountDTO {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsString()
+  @IsOptional()
   @IsUUID()
-  familyId: string;
+  @ApiProperty({
+    required: false,
+    description:
+      'Deprecated: send the X-Family-Id header instead. If both are sent they must match.',
+  })
+  familyId?: string;
 }

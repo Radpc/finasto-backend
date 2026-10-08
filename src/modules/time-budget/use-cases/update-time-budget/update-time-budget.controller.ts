@@ -1,14 +1,15 @@
-import { Body, Controller, Param, Patch, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { Body, Controller, Param, Patch } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ControllerResponse } from 'src/types/response';
 import { TimeBudgetDTO } from '../../dto/time-budget.dto';
 import { UpdateTimeBudgetService } from './update-time-budget.service';
 import { UpdateTimeBudgetDTO } from '../../dto/update-time-budget.dto';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
-@UseGuards(ApiKeyAndJwtGuard)
-@ApiBearerAuth()
+@FamilyScoped()
 @Controller('time-budgets')
 @ApiTags('Time budget')
 export class UpdateTimeBudgetController {
@@ -18,13 +19,13 @@ export class UpdateTimeBudgetController {
 
   @Patch(':timeBudgetId')
   async handle(
+    @FamilyId() familyId: string,
     @Param('timeBudgetId') timeBudgetId: string,
-    @Req() req: AuthorizedRequest,
     @Body() payload: UpdateTimeBudgetDTO,
   ): ControllerResponse<TimeBudgetDTO> {
     const result = await this.updateTimeBudgetService.execute({
+      familyId,
       timeBudgetId,
-      requester: req.user,
       payload,
     });
     return result.toDTO();

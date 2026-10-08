@@ -1,11 +1,13 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { ApiTags } from '@nestjs/swagger';
 import { ControllerResponse } from 'src/types/response';
 import { GetPaymentValueByPeriodQuery } from './get-payment-value-by-period.query';
 import { GetPaymentValueSumByPeriodService } from './get-payment-value-sum-by-period.service';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
 function getTimezoneFromISO(isoDateString: string) {
   const parts = isoDateString.split('T');
@@ -29,16 +31,15 @@ export class GetPaymentValueSumByPeriodController {
     private readonly getPaymentValueSumByPeriodService: GetPaymentValueSumByPeriodService,
   ) {}
 
-  @UseGuards(ApiKeyAndJwtGuard)
-  @ApiBearerAuth()
+  @FamilyScoped()
   @Get('value-sum-by-period')
   async handle(
+    @FamilyId() familyId: string,
     @Query() query: GetPaymentValueByPeriodQuery,
-    @Req() req: AuthorizedRequest,
   ): ControllerResponse<{ from: Date; total: number }[]> {
     const res = await this.getPaymentValueSumByPeriodService.execute({
+      familyId,
       query,
-      requester: req.user,
       timezone: getTimezoneFromISO(query.since) || '+00:00',
     });
     return res;

@@ -1,14 +1,16 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { Body, Controller, Post, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ControllerResponse } from 'src/types/response';
 import { CreateUserService } from './create-user.service';
 import { CreateUserDTO } from '../../dto/create-user.dto';
 import { UserDTO } from '../../dto/user.dto';
 import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
-@UseGuards(ApiKeyAndJwtGuard)
-@ApiBearerAuth()
+@FamilyScoped()
 @Controller('users')
 @ApiTags('User')
 export class CreateUserController {
@@ -16,10 +18,12 @@ export class CreateUserController {
 
   @Post()
   async handle(
+    @FamilyId() familyId: string,
     @Body() createUserDTO: CreateUserDTO,
     @Req() req: AuthorizedRequest,
   ): ControllerResponse<UserDTO> {
     const result = await this.createUserService.execute({
+      familyId,
       payload: createUserDTO,
       requester: req.user,
     });

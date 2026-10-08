@@ -1,11 +1,12 @@
-import { Controller, UseGuards, Req, Get, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { GetRecurringPaymentByIdService } from './get-recurring-payment-by-id.service';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
-@UseGuards(ApiKeyAndJwtGuard)
-@ApiBearerAuth()
+@FamilyScoped()
 @Controller('recurring-payments')
 @ApiTags('Recurring Payment')
 export class GetRecurringPaymentByIdController {
@@ -15,11 +16,11 @@ export class GetRecurringPaymentByIdController {
 
   @Get(':recurringPaymentId')
   async handle(
+    @FamilyId() familyId: string,
     @Param('recurringPaymentId') recurringPaymentId: string,
-    @Req() req: AuthorizedRequest,
   ) {
     const res = await this.getRecurringPaymentByIdService.execute({
-      requester: req.user,
+      familyId,
       recurringPaymentId: recurringPaymentId,
     });
     return res.toDTO();

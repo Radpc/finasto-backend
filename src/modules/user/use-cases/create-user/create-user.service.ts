@@ -8,6 +8,7 @@ import { UserDomain, UserRole } from '../../domain/user.domain';
 import { UserDTO } from '../../dto/user.dto';
 
 type Input = {
+  familyId: string;
   payload: CreateUserDTO;
   requester: UserDTO;
 };
@@ -47,12 +48,7 @@ export class CreateUserService {
       email: payload.email,
       password: await hash(payload.password, 12),
       role: payload.role,
-      families: {
-        connect: {
-          id: payload.familyId,
-          users: { some: { id: input.requester.id } },
-        },
-      },
+      families: { connect: { id: input.familyId } },
     });
 
     return result;

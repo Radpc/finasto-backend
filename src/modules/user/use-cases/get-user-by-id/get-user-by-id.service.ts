@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepoService } from 'src/database/repositories/user/user-repo.service';
 import { UserDomain } from '../../domain/user.domain';
-import { UserDTO } from '../../dto/user.dto';
 
 type Input = {
+  familyId: string;
   userId: string;
-  requester: UserDTO;
 };
 type Output = UserDomain;
 
@@ -14,11 +13,8 @@ export class GetUserByIdService {
   constructor(private readonly userRepoService: UserRepoService) {}
 
   async execute(input: Input): Promise<Output> {
-    const result = await this.userRepoService.getUser({
-      where: {
-        id: input.userId,
-        families: { some: { users: { some: { id: input.requester.id } } } },
-      },
+    const result = await this.userRepoService.getFamilyMember(input.familyId, {
+      where: { id: input.userId },
     });
 
     if (!result) throw new NotFoundException();

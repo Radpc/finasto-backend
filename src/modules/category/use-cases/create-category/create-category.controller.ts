@@ -1,25 +1,26 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Controller, Post, Body } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateCategoryDTO } from '../../dto/create-category.dto';
 import { CreateCategoryService } from './create-category.service';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
 @Controller('categories')
 @ApiTags('Category')
 export class CreateCategoryController {
   constructor(private readonly createCategory: CreateCategoryService) {}
 
-  @UseGuards(ApiKeyAndJwtGuard)
-  @ApiBearerAuth()
+  @FamilyScoped()
   @Post()
   async handle(
+    @FamilyId() familyId: string,
     @Body() createCategoryDto: CreateCategoryDTO,
-    @Req() req: AuthorizedRequest,
   ) {
     const res = await this.createCategory.execute({
+      familyId,
       payload: createCategoryDto,
-      requesterId: req.user.id,
     });
     return res.toDTO();
   }

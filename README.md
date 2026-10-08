@@ -110,9 +110,15 @@ The API accepts three kinds of credentials on protected routes, tried in this or
 
 `GET /me` returns the signed-in user and their families.
 
+## Active family
+
+Family data (accounts, categories, tags, payments, recurring payments, budgets, members) is read and written in one family at a time, sent in the `X-Family-Id` header. Someone who belongs to a single family can leave it out. Until every client sends the header, a `familyId` in the body or query is read the same way; if both are sent they must match (`FAMILY_MISMATCH`). A family the requester is not in answers 404, and a user in several families who sends none gets `FAMILY_REQUIRED`.
+
+Controllers opt in with `@FamilyScoped()` and read the id with `@FamilyId()` (`src/common/family/`). Repositories take that id as their first argument and add the family condition themselves (`src/database/family-scope.ts`), so services never filter by family by hand. Only scheduled jobs use the methods named `...AcrossFamilies`.
+
 ## Security notes
 
-- Every query is scoped to the families the requester belongs to; `test/tenant-isolation.e2e-spec.ts` checks that ids from another family behave like ids that do not exist (404).
+- Every query is scoped to the active family; `test/tenant-isolation.e2e-spec.ts` and `test/family-context.e2e-spec.ts` check that ids from another family behave like ids that do not exist (404).
 - `/login` allows 5 attempts per minute per client; other routes 120 per minute.
 - API keys are stored as SHA-256 hashes (`src/utils/api-key.ts`); generate them with `generateApiKey()` and show them once.
 - Security headers come from `helmet`.

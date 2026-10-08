@@ -1,10 +1,9 @@
 import { RecurringPaymentDomain } from '../../domain/recurring-payment.domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { RecurringPaymentRepoService } from 'src/database/repositories/recurring-payment/recurring-payment-repo.service';
-import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
-  requester: UserDTO;
+  familyId: string;
   recurringPaymentId: string;
 };
 
@@ -17,20 +16,18 @@ export class GetRecurringPaymentByIdService {
   ) {}
 
   async execute(input: Input): Promise<Output> {
-    const result = await this.recurringPaymentRepoService.getRecurringPayment({
-      where: {
-        id: input.recurringPaymentId,
-        account: {
-          family: { users: { some: { id: input.requester.id } } },
+    const result = await this.recurringPaymentRepoService.getRecurringPayment(
+      input.familyId,
+      {
+        where: { id: input.recurringPaymentId },
+        include: {
+          account: true,
+          category: true,
+          tags: true,
+          createdBy: true,
         },
       },
-      include: {
-        account: true,
-        category: true,
-        tags: true,
-        createdBy: true,
-      },
-    });
+    );
 
     if (!result) throw new NotFoundException();
 
