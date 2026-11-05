@@ -1,13 +1,14 @@
-import { Controller, UseGuards, Req, Get, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ListRecurringPaymentsService } from './list-recurring-payments.service';
 import { ListRecurringPaymentsQuery } from './list-recurring-payments.dto';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
 import { toPage } from 'src/common/pagination';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
-@UseGuards(ApiKeyAndJwtGuard)
-@ApiBearerAuth()
+@FamilyScoped()
 @Controller('recurring-payments')
 @ApiTags('Recurring Payment')
 export class ListRecurringPaymentsController {
@@ -17,11 +18,11 @@ export class ListRecurringPaymentsController {
 
   @Get()
   async handle(
+    @FamilyId() familyId: string,
     @Query() query: ListRecurringPaymentsQuery,
-    @Req() req: AuthorizedRequest,
   ) {
     const { data, total } = await this.listRecurringPaymentsService.execute({
-      requester: req.user,
+      familyId,
       query,
     });
     return toPage(

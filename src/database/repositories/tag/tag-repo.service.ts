@@ -2,43 +2,39 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import { Prisma } from '@prisma/client';
 import { TagDomain } from 'src/modules/tags/domain/tag.domain';
+import { PaginatedList } from 'src/types/utils';
+import { familyScope, inScope, uniqueInScope } from '../../family-scope';
 
-type PaginatedList<T> = {
-  data: T[];
-  total: number;
-};
-
+/** Every method works inside one family, given as the first argument. */
 @Injectable()
 export class TagRepoService {
   constructor(private prisma: PrismaService) {}
 
   async getTag(
-    tagWhereUniqueInput: Prisma.TagWhereUniqueInput,
+    familyId: string,
+    where: Prisma.TagWhereUniqueInput,
   ): Promise<TagDomain | null> {
     const raw = await this.prisma.tag.findUnique({
-      where: tagWhereUniqueInput,
+      where: uniqueInScope(where, familyScope.tag(familyId)),
     });
 
     return raw ? TagDomain.fromRaw(raw) : null;
   }
 
-  async getTags(params: {
-    skip: number;
-    take: number;
-    cursor?: Prisma.TagWhereUniqueInput;
-    where?: Prisma.TagWhereInput;
-    orderBy?: Prisma.TagOrderByWithRelationInput;
-  }): Promise<PaginatedList<TagDomain>> {
-    const { skip, take, cursor, where, orderBy } = params;
+  async getTags(
+    familyId: string,
+    params: {
+      skip?: number;
+      take?: number;
+      where?: Prisma.TagWhereInput;
+      orderBy?: Prisma.TagOrderByWithRelationInput;
+    },
+  ): Promise<PaginatedList<TagDomain>> {
+    const { skip, take, orderBy } = params;
+    const where = inScope(params.where, familyScope.tag(familyId));
     const [count, raws] = await this.prisma.$transaction([
       this.prisma.tag.count({ where }),
-      this.prisma.tag.findMany({
-        skip,
-        take,
-        cursor,
-        where,
-        orderBy,
-      }),
+      this.prisma.tag.findMany({ skip, take, where, orderBy }),
     ]);
 
     return {
@@ -47,29 +43,27 @@ export class TagRepoService {
     };
   }
 
-  async createTag(data: Prisma.TagCreateInput): Promise<TagDomain> {
+  async createTag(
+    familyId: string,
+    data: Omit<Prisma.TagCreateInput, 'family'>,
+  ): Promise<TagDomain> {
     const raw = await this.prisma.tag.create({
-      data,
+      data: { ...data, family: { connect: { id: familyId } } },
     });
 
     return TagDomain.fromRaw(raw);
   }
 
-  async updateTag(params: {
-    where: Prisma.TagWhereUniqueInput;
-    data: Prisma.TagUpdateInput;
-  }): Promise<TagDomain> {
-    const { where, data } = params;
+  async updateTag(
+    familyId: string,
+    params: {
+      where: Prisma.TagWhereUniqueInput;
+      data: Omit<Prisma.TagUpdateInput, 'family'>;
+    },
+  ): Promise<TagDomain> {
     const raw = await this.prisma.tag.update({
-      data,
-      where,
-    });
-    return TagDomain.fromRaw(raw);
-  }
-
-  async deleteTag(where: Prisma.TagWhereUniqueInput): Promise<TagDomain> {
-    const raw = await this.prisma.tag.delete({
-      where,
+      data: params.data,
+      where: uniqueInScope(params.where, familyScope.tag(familyId)),
     });
     return TagDomain.fromRaw(raw);
   }

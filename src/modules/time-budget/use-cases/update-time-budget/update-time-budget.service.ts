@@ -2,10 +2,9 @@ import { UpdateTimeBudgetDTO } from '../../dto/update-time-budget.dto';
 import { TimeBudgetDomain } from '../../domain/time-budget.domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TimeBudgetRepoService } from 'src/database/repositories/time-budget/time-budget-repo.service';
-import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
-  requester: UserDTO;
+  familyId: string;
   timeBudgetId: string;
   payload: UpdateTimeBudgetDTO;
 };
@@ -17,24 +16,12 @@ export class UpdateTimeBudgetService {
   constructor(private readonly timeBudgetRepo: TimeBudgetRepoService) {}
 
   async execute(input: Input): Promise<Output> {
-    const { payload, requester, timeBudgetId } = input;
-    const res = await this.timeBudgetRepo.updateTimeBudget({
-      where: {
-        id: timeBudgetId,
-        category: {
-          family: { users: { some: { id: requester.id } } },
-        },
-      },
+    const { familyId, payload, timeBudgetId } = input;
+    const res = await this.timeBudgetRepo.updateTimeBudget(familyId, {
+      where: { id: timeBudgetId },
       data: {
         budgetValue: payload.budgetValue ?? undefined,
-        category: payload.categoryId
-          ? {
-              connect: {
-                id: payload.categoryId,
-                family: { users: { some: { id: requester.id } } },
-              },
-            }
-          : undefined,
+        categoryId: payload.categoryId ?? undefined,
         startDate: payload.startDate ?? undefined,
         endDate: payload.endDate ?? undefined,
       },

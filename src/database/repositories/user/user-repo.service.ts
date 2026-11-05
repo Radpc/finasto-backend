@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 import { UserDomain } from 'src/modules/user/domain/user.domain';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import { PaginatedList } from 'src/types/utils';
+import { familyScope, inScope, uniqueInScope } from '../../family-scope';
 
 type GetUniqueInput = {
   select?: Prisma.UserSelect<DefaultArgs> | null | undefined;
@@ -39,31 +40,39 @@ export class UserRepoService {
     return count === 1;
   }
 
-  async getUsers(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.UserWhereUniqueInput;
-    where?: Prisma.UserWhereInput;
-    orderBy?: Prisma.UserOrderByWithRelationInput;
-    include?: Prisma.UserInclude<DefaultArgs>;
-  }): Promise<PaginatedList<UserDomain>> {
-    const { skip, take, cursor, where, orderBy, include } = params;
-
-    const query = {
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-      include,
-    } satisfies Prisma.UserFindManyArgs;
+  /** Members of one family. */
+  async getUsers(
+    familyId: string,
+    params: {
+      skip?: number;
+      take?: number;
+      where?: Prisma.UserWhereInput;
+      orderBy?: Prisma.UserOrderByWithRelationInput;
+      include?: Prisma.UserInclude<DefaultArgs>;
+    },
+  ): Promise<PaginatedList<UserDomain>> {
+    const { skip, take, orderBy, include } = params;
+    const where = inScope(params.where, familyScope.user(familyId));
 
     const [raws, count] = await this.prisma.$transaction([
-      this.prisma.user.findMany(query),
-      this.prisma.user.count({ where: query.where }),
+      this.prisma.user.findMany({ skip, take, where, orderBy, include }),
+      this.prisma.user.count({ where }),
     ]);
 
     return { data: raws.map(UserDomain.fromRaw), total: count };
+  }
+
+  /** A member of one family. */
+  async getFamilyMember(
+    familyId: string,
+    options: GetUniqueInput,
+  ): Promise<UserDomain | null> {
+    const raw = await this.prisma.user.findUnique({
+      ...options,
+      where: uniqueInScope(options.where, familyScope.user(familyId)),
+    });
+
+    return raw ? UserDomain.fromRaw(raw) : null;
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<UserDomain> {

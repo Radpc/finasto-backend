@@ -20,6 +20,8 @@ export enum ErrorCode {
   FamilyHeadOnly = 'FAMILY_HEAD_ONLY',
   InvalidDate = 'INVALID_DATE',
   InvalidTimezone = 'INVALID_TIMEZONE',
+  FamilyRequired = 'FAMILY_REQUIRED',
+  FamilyMismatch = 'FAMILY_MISMATCH',
 }
 
 /** Code used when an exception carries only an HTTP status. */

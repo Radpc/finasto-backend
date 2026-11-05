@@ -32,19 +32,21 @@ export class CreatePaymentFromRecurringService {
 
     // Get pending open recurring payments
     const { data: recurringPaymentsPending } =
-      await this.recurringPaymentRepoService.getRecurringPayments({
-        where: {
-          numberOfInstallments: { equals: null },
-          payments: {
-            none: {
-              paymentDate: {
-                gte: startOfMonth.toISO(),
-                lte: endOfMonth.toISO(),
+      await this.recurringPaymentRepoService.getRecurringPaymentsAcrossFamilies(
+        {
+          where: {
+            numberOfInstallments: { equals: null },
+            payments: {
+              none: {
+                paymentDate: {
+                  gte: startOfMonth.toISO(),
+                  lte: endOfMonth.toISO(),
+                },
               },
             },
           },
         },
-      });
+      );
 
     const paymentPayloads: Prisma.PaymentCreateManyInput[] =
       recurringPaymentsPending.map((r) => ({
@@ -64,7 +66,10 @@ export class CreatePaymentFromRecurringService {
       }));
 
     // Create payments
-    const res = await this.paymentRepository.createPayments(paymentPayloads);
+    const res =
+      await this.paymentRepository.createPaymentsAcrossFamilies(
+        paymentPayloads,
+      );
     return res;
   }
 

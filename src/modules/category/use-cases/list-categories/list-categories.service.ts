@@ -10,8 +10,8 @@ type FindAllInput = {
 };
 
 type Input = {
+  familyId: string;
   query: FindAllInput;
-  requesterId: string;
 };
 type Output = PaginatedList<CategoryDomain>;
 
@@ -19,13 +19,12 @@ type Output = PaginatedList<CategoryDomain>;
 export class ListCategoriesService {
   constructor(private categoryRepository: CategoryRepoService) {}
 
-  async execute({ query, requesterId }: Input): Promise<Output> {
+  async execute({ familyId, query }: Input): Promise<Output> {
     const take = query.pageSize;
     const skip = take * (query.page - 1);
 
-    const result = await this.categoryRepository.categories({
+    const result = await this.categoryRepository.categories(familyId, {
       where: {
-        family: { users: { some: { id: requesterId } } },
         label: query.label ? { contains: query.label } : undefined,
       },
       skip,

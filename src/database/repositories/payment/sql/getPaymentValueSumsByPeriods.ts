@@ -44,7 +44,6 @@ export interface IGetPaymentValueSymsByPeriodsQuery {
   until: Date;
   timezone: string;
   periodType: PaymentValuePeriodType;
-  requesterId: string;
 
   // Optional
   minValue?: number;
@@ -54,13 +53,13 @@ export interface IGetPaymentValueSymsByPeriodsQuery {
   paymentMethod?: PaymentMethod;
   searchBy?: string;
   tagIds?: string[];
-  familyId?: string;
   recurringPaymentId?: string;
   accountId?: string;
   hasRecurringPayment?: boolean;
 }
 
 interface IProps {
+  familyId: string;
   query: IGetPaymentValueSymsByPeriodsQuery;
 }
 
@@ -139,17 +138,17 @@ const getGroupBy = (periodType: PaymentValuePeriodType) => {
 };
 
 const getArguments = (
+  familyId: string,
   query: IGetPaymentValueSymsByPeriodsQuery,
 ): (string | number)[] => {
-  const joins = [query.requesterId];
   const wheres: (string | number)[] = [
+    familyId,
     query.since.toISOString(),
     query.until.toISOString(),
   ];
 
   if (query.accountId) wheres.push(query.accountId);
   if (query.categoryId) wheres.push(query.categoryId);
-  if (query.familyId) wheres.push(query.familyId);
 
   if (query.maxValue) wheres.push(query.maxValue);
   if (query.minValue) wheres.push(query.minValue);
@@ -158,14 +157,16 @@ const getArguments = (
   if (query.searchBy) wheres.push(`%${query.searchBy}%`);
   if (query.status) wheres.push(query.status);
 
-  return [...joins, ...wheres];
+  return wheres;
 };
 
 const getWhere = (query: IGetPaymentValueSymsByPeriodsQuery): string => {
-  const whereStatements = ['(paymentDate BETWEEN ? AND ?)'];
+  const whereStatements = [
+    'Account.familyId = ?',
+    '(paymentDate BETWEEN ? AND ?)',
+  ];
   if (query.accountId) whereStatements.push('accountId = ?');
   if (query.categoryId) whereStatements.push('categoryId = ?');
-  if (query.familyId) whereStatements.push('Account.familyId = ?');
   if (query.hasRecurringPayment !== undefined) {
     if (query.hasRecurringPayment) {
       whereStatements.push('recurringPaymentId IS NOT NULL');
@@ -184,28 +185,18 @@ const getWhere = (query: IGetPaymentValueSymsByPeriodsQuery): string => {
   return 'WHERE ' + whereStatements.join(' AND ');
 };
 
-const getJoins = (): string => {
-  const joins = [
-    'JOIN Account on Account.id = accountId',
-    'JOIN Family on Family.id = Account.familyId',
-    'JOIN _FamilyToUser on Family.id = _FamilyToUser.A',
-    'JOIN User on (User.id = _FamilyToUser.B AND User.id = ?)',
-  ];
-
-  return joins.join(' ');
-};
-
 export const getPaymentValueSumsByPeriodsSQL = ({
+  familyId,
   query,
 }: IProps): Prisma.Sql => {
   const res = Prisma.raw(`
     ${getSelect(query)}
     FROM Payment
-    ${getJoins()}
+    JOIN Account on Account.id = accountId
     ${getWhere(query)}
     ${getGroupBy(query.periodType)}
     `);
 
-  (res.values as any) = getArguments(query);
+  (res.values as any) = getArguments(familyId, query);
   return res;
 };

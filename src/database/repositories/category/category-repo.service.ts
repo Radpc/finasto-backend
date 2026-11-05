@@ -3,38 +3,38 @@ import { PrismaService } from '../../prisma.service';
 import { Prisma } from '@prisma/client';
 import { CategoryDomain } from 'src/modules/category/domain/category.domain';
 import { PaginatedList } from 'src/types/utils';
+import { familyScope, inScope, uniqueInScope } from '../../family-scope';
 
+/** Every method works inside one family, given as the first argument. */
 @Injectable()
 export class CategoryRepoService {
   constructor(private prisma: PrismaService) {}
 
   async getCategory(
-    categoryWhereUniqueInput: Prisma.CategoryWhereUniqueInput,
+    familyId: string,
+    where: Prisma.CategoryWhereUniqueInput,
   ): Promise<CategoryDomain | null> {
     const raw = await this.prisma.category.findUnique({
-      where: categoryWhereUniqueInput,
+      where: uniqueInScope(where, familyScope.category(familyId)),
     });
 
     return raw ? CategoryDomain.fromRaw(raw) : null;
   }
 
-  async categories(params: {
-    skip: number;
-    take: number;
-    cursor?: Prisma.CategoryWhereUniqueInput;
-    where?: Prisma.CategoryWhereInput;
-    orderBy?: Prisma.CategoryOrderByWithRelationInput;
-  }): Promise<PaginatedList<CategoryDomain>> {
-    const { skip, take, cursor, where, orderBy } = params;
+  async categories(
+    familyId: string,
+    params: {
+      skip: number;
+      take: number;
+      where?: Prisma.CategoryWhereInput;
+      orderBy?: Prisma.CategoryOrderByWithRelationInput;
+    },
+  ): Promise<PaginatedList<CategoryDomain>> {
+    const { skip, take, orderBy } = params;
+    const where = inScope(params.where, familyScope.category(familyId));
     const [count, raws] = await this.prisma.$transaction([
       this.prisma.category.count({ where }),
-      this.prisma.category.findMany({
-        skip,
-        take,
-        cursor,
-        where,
-        orderBy,
-      }),
+      this.prisma.category.findMany({ skip, take, where, orderBy }),
     ]);
 
     return {
@@ -44,32 +44,26 @@ export class CategoryRepoService {
   }
 
   async createCategory(
-    data: Prisma.CategoryCreateInput,
+    familyId: string,
+    data: Omit<Prisma.CategoryCreateInput, 'family'>,
   ): Promise<CategoryDomain> {
     const raw = await this.prisma.category.create({
-      data,
+      data: { ...data, family: { connect: { id: familyId } } },
     });
 
     return CategoryDomain.fromRaw(raw);
   }
 
-  async updateCategory(params: {
-    where: Prisma.CategoryWhereUniqueInput;
-    data: Prisma.CategoryUpdateInput;
-  }): Promise<CategoryDomain> {
-    const { where, data } = params;
-    const raw = await this.prisma.category.update({
-      data,
-      where,
-    });
-    return CategoryDomain.fromRaw(raw);
-  }
-
-  async deleteCategory(
-    where: Prisma.CategoryWhereUniqueInput,
+  async updateCategory(
+    familyId: string,
+    params: {
+      where: Prisma.CategoryWhereUniqueInput;
+      data: Omit<Prisma.CategoryUpdateInput, 'family'>;
+    },
   ): Promise<CategoryDomain> {
-    const raw = await this.prisma.category.delete({
-      where,
+    const raw = await this.prisma.category.update({
+      data: params.data,
+      where: uniqueInScope(params.where, familyScope.category(familyId)),
     });
     return CategoryDomain.fromRaw(raw);
   }

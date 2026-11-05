@@ -1,30 +1,30 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 
-import { ApiBearerAuth, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ListPaymentsService } from './list-payments.service';
 import { ListPaymentsQuery } from './list-payments.dto';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
 import { toPage } from 'src/common/pagination';
 import { PaymentDTO } from '../../dto/payment.dto';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
 @Controller('payments')
 @ApiTags('Payment')
-@UseGuards(ApiKeyAndJwtGuard)
-@ApiBearerAuth()
-@ApiSecurity('x-api-key')
+@FamilyScoped()
 export class ListPaymentsController {
   constructor(private readonly listPaymentsService: ListPaymentsService) {}
 
   @Get()
   async handle(
+    @FamilyId() familyId: string,
     @Query() query: ListPaymentsQuery,
-    @Req() req: AuthorizedRequest,
   ): ControllerResponse<PaginatedResponse<PaymentDTO>> {
     const { data, total } = await this.listPaymentsService.execute({
+      familyId,
       query,
-      requesterId: req.user.id,
     });
     return toPage(
       data.map((d) => d.toDTO()),

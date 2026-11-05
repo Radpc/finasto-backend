@@ -3,8 +3,8 @@ import { AccountDomain } from '../../domain/account.domain';
 import { AccountRepoService } from 'src/database/repositories/account/account-repo.service';
 
 type Input = {
+  familyId: string;
   accountId: string;
-  requesterId: string;
 };
 type Output = AccountDomain;
 
@@ -13,9 +13,8 @@ export class GetAccountByIdService {
   constructor(private readonly accountRepoService: AccountRepoService) {}
 
   async execute(input: Input): Promise<Output> {
-    const account = await this.accountRepoService.getAccount({
+    const account = await this.accountRepoService.getAccount(input.familyId, {
       id: input.accountId,
-      family: { users: { some: { id: input.requesterId } } },
     });
 
     if (!account) throw new NotFoundException();

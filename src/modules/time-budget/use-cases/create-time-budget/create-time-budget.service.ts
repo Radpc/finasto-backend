@@ -5,6 +5,7 @@ import { TimeBudgetRepoService } from 'src/database/repositories/time-budget/tim
 import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
+  familyId: string;
   payload: CreateTimeBudgetDTO;
   requester: UserDTO;
 };
@@ -17,19 +18,12 @@ export class CreateTimeBudgetService {
 
   async execute(input: Input): Promise<Output> {
     const payload = input.payload;
-    const result = await this.timeBudgetRepo.createTimeBudget({
+    return this.timeBudgetRepo.createTimeBudget(input.familyId, {
       startDate: payload.startDate,
       endDate: payload.endDate,
       budgetValue: payload.budgetValue,
-      category: {
-        connect: {
-          id: payload.categoryId,
-          family: { users: { some: { id: input.requester.id } } },
-        },
-      },
+      categoryId: payload.categoryId,
       createdBy: { connect: { id: input.requester.id } },
     });
-
-    return result;
   }
 }

@@ -85,18 +85,17 @@ describe('Response and error shape (e2e)', () => {
 
   it('lists each invalid field', async () => {
     const res = await api()
-      .post('/categories')
+      .post('/accounts')
       .set(auth())
-      .send({ label: '', familyId: 'not-a-uuid' })
+      .send({ name: 42 })
       .expect(400);
     expect(res.body).toMatchObject({
       statusCode: 400,
       code: 'VALIDATION_FAILED',
       message: expect.any(String),
     });
-    expect(res.body.details.map((d: { field: string }) => d.field)).toEqual([
-      'label',
-      'familyId',
+    expect(res.body.details).toEqual([
+      { field: 'name', constraints: { isString: expect.any(String) } },
     ]);
   });
 

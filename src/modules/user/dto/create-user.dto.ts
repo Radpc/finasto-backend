@@ -6,6 +6,7 @@ import {
   IsUUID,
   MaxLength,
   MinLength,
+  IsOptional,
 } from 'class-validator';
 import { UserRole } from '../domain/user.domain';
 
@@ -25,9 +26,14 @@ export class CreateUserDTO {
   @MaxLength(72) // bcrypt ignores bytes beyond 72
   password: string;
 
-  @ApiProperty()
+  @IsOptional()
   @IsUUID()
-  familyId: string;
+  @ApiProperty({
+    required: false,
+    description:
+      'Deprecated: send the X-Family-Id header instead. If both are sent they must match.',
+  })
+  familyId?: string;
 
   @ApiProperty({ enum: UserRole })
   @IsEnum(UserRole)

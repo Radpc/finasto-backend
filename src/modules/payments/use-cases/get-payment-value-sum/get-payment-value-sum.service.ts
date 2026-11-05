@@ -2,11 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { GetPaymentValueQuery } from './get-payment-value.query';
 import { PaymentRepoService } from 'src/database/repositories/payment/payment-repo.service';
 import { Prisma } from '@prisma/client';
-import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
+  familyId: string;
   query: GetPaymentValueQuery;
-  requester: UserDTO;
 };
 type Output = {
   gain: number;
@@ -17,7 +16,7 @@ type Output = {
 export class GetPaymentValueSumService {
   constructor(private readonly paymentRepoService: PaymentRepoService) {}
 
-  async execute({ query, requester }: Input): Promise<Output> {
+  async execute({ familyId, query }: Input): Promise<Output> {
     let recurringPaymentWhere:
       | Prisma.RecurringPaymentWhereInput
       | null
@@ -31,12 +30,9 @@ export class GetPaymentValueSumService {
       recurringPaymentWhere = { id: {} };
     }
 
-    const res = await this.paymentRepoService.getPaymentValueSums({
+    const res = await this.paymentRepoService.getPaymentValueSums(familyId, {
       where: {
-        account: {
-          id: query.accountId,
-          family: { users: { some: { id: requester.id } } },
-        },
+        accountId: query.accountId,
         categoryId: query.categoryId,
         status: query.status,
         tags: query.tagIds ? { some: { id: { in: query.tagIds } } } : undefined,

@@ -1,14 +1,15 @@
-import { Body, Controller, Param, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Put } from '@nestjs/common';
 import { ControllerResponse } from 'src/types/response';
 import { AccountDTO } from '../../dto/account.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { UpdateAccountDTO } from '../../dto/update-account.dto';
 import { UpdateAccountService } from './update-account.service';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
-@UseGuards(ApiKeyAndJwtGuard)
-@ApiBearerAuth()
+@FamilyScoped()
 @Controller('accounts')
 @ApiTags('Account')
 export class UpdateAccountController {
@@ -16,13 +17,13 @@ export class UpdateAccountController {
 
   @Put(':accountId')
   async handle(
+    @FamilyId() familyId: string,
     @Param('accountId') accountId: string,
     @Body() payload: UpdateAccountDTO,
-    @Req() req: AuthorizedRequest,
   ): ControllerResponse<AccountDTO> {
     const result = await this.updateAccountService.execute({
+      familyId,
       payload,
-      requesterId: req.user.id,
       accountId: accountId,
     });
 

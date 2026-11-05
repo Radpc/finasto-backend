@@ -153,13 +153,13 @@ describe('Tenant isolation (e2e)', () => {
       .patch(`/categories/${b.categoryId}`)
       .set(auth(b.headToken))
       .send({ label: 'Renamed', familyId: a.familyId })
-      .expect(200);
+      .expect(404);
 
     const category = await prisma.category.findUniqueOrThrow({
       where: { id: b.categoryId },
     });
     expect(category.familyId).toBe(b.familyId);
-    expect(category.label).toBe('Renamed');
+    expect(category.label).toBe('Food');
   });
 
   it("cannot update another family's category", async () => {

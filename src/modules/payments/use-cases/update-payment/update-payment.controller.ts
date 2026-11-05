@@ -1,30 +1,31 @@
-import { Body, Controller, Param, Patch, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Patch } from '@nestjs/common';
 
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { ApiTags } from '@nestjs/swagger';
 import { ControllerResponse } from 'src/types/response';
 import { PaymentDTO } from '../../dto/payment.dto';
 import { UpdatePaymentService } from './update-payment.service';
 import { UpdatePaymentDTO } from '../../dto/update-payment.dto';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
 @Controller('payments')
 @ApiTags('Payment')
 export class UpdatePaymentController {
   constructor(private readonly updatePaymentService: UpdatePaymentService) {}
 
-  @UseGuards(ApiKeyAndJwtGuard)
-  @ApiBearerAuth()
+  @FamilyScoped()
   @Patch('/:paymentId')
   async handle(
+    @FamilyId() familyId: string,
     @Body() payload: UpdatePaymentDTO,
     @Param('paymentId') paymentId: string,
-    @Req() req: AuthorizedRequest,
   ): ControllerResponse<PaymentDTO> {
     const res = await this.updatePaymentService.execute({
+      familyId,
       paymentId,
       payload,
-      requester: req.user,
     });
     return res.toDTO();
   }

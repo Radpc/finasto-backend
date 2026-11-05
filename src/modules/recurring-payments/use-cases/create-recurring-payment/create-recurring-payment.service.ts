@@ -10,6 +10,7 @@ import { DateTime } from 'luxon';
 import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = {
+  familyId: string;
   payload: CreateRecurringPaymentDTO;
   requester: UserDTO;
 };
@@ -22,7 +23,7 @@ export class CreateRecurringPaymentService {
   ) {}
 
   async execute(input: Input): Promise<Output> {
-    const { payload, requester } = input;
+    const { familyId, payload, requester } = input;
 
     const startDate = payload.startDateFrom
       ? DateTime.fromISO(payload.startDateFrom)
@@ -112,32 +113,17 @@ export class CreateRecurringPaymentService {
     }
 
     const result =
-      await this.recurringPaymentRepoService.createRecurringPayment({
+      await this.recurringPaymentRepoService.createRecurringPayment(familyId, {
         description: payload.description,
         dayOfMonth: payload.dayOfMonth,
         paymentMethod: payload.paymentMethod,
         singlePaymentValue: payload.singlePaymentValue,
         numberOfInstallments: payload.numberOfInstallments,
         totalValue: payload.totalValue,
-        account: {
-          connect: {
-            id: payload.accountId,
-            family: { users: { some: { id: requester.id } } },
-          },
-        },
+        accountId: payload.accountId,
         automaticPayment: payload.automaticPayment,
-        tags: {
-          connect: payload.tagIds?.map((t) => ({
-            id: t,
-            family: { users: { some: { id: requester.id } } },
-          })),
-        },
-        category: {
-          connect: {
-            id: payload.categoryId,
-            family: { users: { some: { id: requester.id } } },
-          },
-        },
+        tagIds: payload.tagIds,
+        categoryId: payload.categoryId,
         createdBy: { connect: { id: requester.id } },
         payments: { createMany: { data: payments } },
       });

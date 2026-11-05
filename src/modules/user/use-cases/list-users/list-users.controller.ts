@@ -1,15 +1,16 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
 import { toPage } from 'src/common/pagination';
 import { UserDTO } from '../../dto/user.dto';
 import { ListUsersService } from './list-users.service';
 import { ListUsersQuery } from './list-users.dto';
-import { AuthorizedRequest } from 'src/modules/jwt/authorized-request.type';
+import {
+  FamilyId,
+  FamilyScoped,
+} from 'src/common/family/family-scoped.decorator';
 
-@UseGuards(ApiKeyAndJwtGuard)
-@ApiBearerAuth()
+@FamilyScoped()
 @Controller('users')
 @ApiTags('User')
 export class ListUsersController {
@@ -17,12 +18,12 @@ export class ListUsersController {
 
   @Get()
   async handle(
+    @FamilyId() familyId: string,
     @Query() query: ListUsersQuery,
-    @Req() req: AuthorizedRequest,
   ): ControllerResponse<PaginatedResponse<UserDTO>> {
     const { data, total } = await this.listUsersService.execute({
+      familyId,
       query,
-      requester: req.user,
     });
     return toPage(
       data.map((d) => d.toDTO()),
