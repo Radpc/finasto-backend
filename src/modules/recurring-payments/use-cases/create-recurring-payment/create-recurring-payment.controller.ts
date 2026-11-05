@@ -23,6 +23,6 @@ export class CreateRecurringPaymentController {
       payload,
       requester: req.user,
     });
-    return { data: res.data.toDTO(), message: 'Category created' };
+    return res.toDTO();
   }
 }

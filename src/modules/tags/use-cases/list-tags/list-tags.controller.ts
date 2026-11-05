@@ -2,6 +2,7 @@ import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
 import { ControllerResponse, PaginatedResponse } from 'src/types/response';
+import { toPage } from 'src/common/pagination';
 import { TagDTO } from '../../dto/tag.dto';
 import { ListTagsService } from './list-tags.service';
 import { ListTagsQuery } from './list-tags.dto';
@@ -23,12 +24,10 @@ export class ListTagsController {
       query,
       requesterId: req.user.id,
     });
-    return {
-      message: 'Success',
-      data: {
-        items: result.data.map((d) => d.toDTO()),
-        pagination: { page: query.page, total: result.total },
-      },
-    };
+    return toPage(
+      result.data.map((d) => d.toDTO()),
+      result.total,
+      query,
+    );
   }
 }

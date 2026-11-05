@@ -23,6 +23,6 @@ export class CreateTimeBudgetController {
       payload: createTimeBudgetDTO,
       requester: request.user,
     });
-    return { data: res.data.toDTO(), message: 'Payment created' };
+    return res.toDTO();
   }
 }

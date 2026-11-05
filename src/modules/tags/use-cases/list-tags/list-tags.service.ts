@@ -2,16 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { TagRepoService } from 'src/database/repositories/tag/tag-repo.service';
 import { TagDomain } from '../../domain/tag.domain';
 import { ListTagsQuery } from './list-tags.dto';
+import { PaginatedList } from 'src/types/utils';
 
 type Input = {
   query: ListTagsQuery;
   requesterId: string;
 };
-type Output = {
-  data: TagDomain[];
-  total: number;
-  message: 'Success';
-};
+type Output = PaginatedList<TagDomain>;
 
 @Injectable()
 export class ListTagsService {
@@ -21,7 +18,7 @@ export class ListTagsService {
     const take = input.query.pageSize;
     const skip = take * (input.query.page - 1);
 
-    const { data, total } = await this.tagRepository.getTags({
+    return this.tagRepository.getTags({
       take,
       skip,
       where: {
@@ -31,7 +28,5 @@ export class ListTagsService {
           : undefined,
       },
     });
-
-    return { data, total, message: 'Success' };
   }
 }

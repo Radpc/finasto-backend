@@ -8,10 +8,7 @@ type Input = {
   payload: CreateAccountDTO;
   requesterId: string;
 };
-type Output = {
-  data: AccountDomain;
-  message: 'Success';
-};
+type Output = AccountDomain;
 
 @Injectable()
 export class CreateAccountService {
@@ -22,17 +19,16 @@ export class CreateAccountService {
 
   async execute(input: Input): Promise<Output> {
     // Check family permission
-    const { data: family } =
-      await this.checkUserFamilyPermissionService.execute({
-        userId: input.requesterId,
-        familyId: input.payload.familyId,
-      });
+    const family = await this.checkUserFamilyPermissionService.execute({
+      userId: input.requesterId,
+      familyId: input.payload.familyId,
+    });
 
     const res = await this.accountRepoService.createAccount({
       name: input.payload.name,
       family: { connect: { id: family.id } },
     });
 
-    return { data: res, message: 'Success' };
+    return res;
   }
 }

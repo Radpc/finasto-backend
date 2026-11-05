@@ -8,10 +8,7 @@ type Input = {
   paymentId: string;
 };
 
-type Output = {
-  data: PaymentDomain;
-  message: 'Success';
-};
+type Output = PaymentDomain;
 
 @Injectable()
 export class GetPaymentByIdService {
@@ -36,9 +33,6 @@ export class GetPaymentByIdService {
 
     if (!res) throw new NotFoundException();
 
-    return {
-      data: res,
-      message: 'Success',
-    };
+    return res;
   }
 }

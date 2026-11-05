@@ -1,4 +1,6 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { AppException } from 'src/common/errors/app.exception';
+import { ErrorCode } from 'src/common/errors/error-code';
 import { UserRepoService } from 'src/database/repositories/user/user-repo.service';
 import { UserJwtService } from 'src/modules/jwt/user-jwt/user-jwt.service';
 
@@ -16,7 +18,11 @@ export class LoginService {
     });
 
     if (!user || !(await user.isPasswordValid(password)))
-      throw new ForbiddenException('Invalid email and/or password');
+      throw new AppException(
+        ErrorCode.InvalidCredentials,
+        HttpStatus.UNAUTHORIZED,
+        'Invalid email or password',
+      );
 
     const userDTO = user.toDTO();
     const jwt = await this.jwtService.encodeJWT(userDTO);

@@ -21,6 +21,6 @@ export class CreateCategoryController {
       payload: createCategoryDto,
       requesterId: req.user.id,
     });
-    return { data: res.data.toDTO(), message: 'Category created' };
+    return res.toDTO();
   }
 }

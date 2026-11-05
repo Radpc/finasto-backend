@@ -9,10 +9,7 @@ type Input = {
   requester: UserDTO;
 };
 
-type Output = {
-  data: TimeBudgetDomain;
-  message: 'Success';
-};
+type Output = TimeBudgetDomain;
 
 @Injectable()
 export class CreateTimeBudgetService {
@@ -33,6 +30,6 @@ export class CreateTimeBudgetService {
       createdBy: { connect: { id: input.requester.id } },
     });
 
-    return { data: result, message: 'Success' };
+    return result;
   }
 }

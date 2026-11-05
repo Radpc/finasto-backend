@@ -9,10 +9,7 @@ type Input = {
   requester: UserDTO;
   query: ListTimeBudgetsQuery;
 };
-type Output = {
-  data: PaginatedList<TimeBudgetDomain>;
-  message: 'Success';
-};
+type Output = PaginatedList<TimeBudgetDomain>;
 
 @Injectable()
 export class ListTimeBudgetService {
@@ -34,6 +31,6 @@ export class ListTimeBudgetService {
       },
     });
 
-    return { data: res, message: 'Success' };
+    return res;
   }
 }

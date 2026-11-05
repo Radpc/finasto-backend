@@ -13,10 +13,7 @@ type Input = {
   query: FindAllInput;
   requesterId: string;
 };
-type Output = {
-  data: PaginatedList<FamilyDomain>;
-  message: 'Success';
-};
+type Output = PaginatedList<FamilyDomain>;
 
 @Injectable()
 export class ListFamiliesService {
@@ -35,9 +32,6 @@ export class ListFamiliesService {
       take,
     });
 
-    return {
-      data: result,
-      message: 'Success',
-    };
+    return result;
   }
 }

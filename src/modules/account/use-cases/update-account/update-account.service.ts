@@ -8,10 +8,7 @@ type Input = {
   payload: UpdateAccountDTO;
   requesterId: string;
 };
-type Output = {
-  data: AccountDomain;
-  message: 'Success';
-};
+type Output = AccountDomain;
 
 @Injectable()
 export class UpdateAccountService {
@@ -28,9 +25,6 @@ export class UpdateAccountService {
       },
     });
 
-    return {
-      data: account,
-      message: 'Success',
-    };
+    return account;
   }
 }

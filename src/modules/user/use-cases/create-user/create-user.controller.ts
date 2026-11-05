@@ -23,6 +23,6 @@ export class CreateUserController {
       payload: createUserDTO,
       requester: req.user,
     });
-    return { data: result.data.toDTO(), message: 'Success' };
+    return result.toDTO();
   }
 }

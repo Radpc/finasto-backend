@@ -5,10 +5,7 @@ import { UserDTO } from 'src/modules/user/dto/user.dto';
 
 type Input = { requester: UserDTO; timeBudgetId: string };
 
-type Output = {
-  data: TimeBudgetDomain;
-  message: 'Success';
-};
+type Output = TimeBudgetDomain;
 
 @Injectable()
 export class GetTimeBudgetByIdService {
@@ -21,6 +18,6 @@ export class GetTimeBudgetByIdService {
 
     if (!res) throw new NotFoundException();
 
-    return { data: res, message: 'Success' };
+    return res;
   }
 }

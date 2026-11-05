@@ -23,6 +23,6 @@ export class GetFamilyByIdController {
       requesterId: req.user.id,
     });
 
-    return { data: result.data.toDTO(), message: 'Success' };
+    return result.toDTO();
   }
 }

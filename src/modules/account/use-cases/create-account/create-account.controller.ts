@@ -24,9 +24,6 @@ export class CreateAccountController {
       requesterId: req.user.id,
     });
 
-    return {
-      data: result.data.toDTO(),
-      message: 'Success',
-    };
+    return result.toDTO();
   }
 }

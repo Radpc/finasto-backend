@@ -22,6 +22,6 @@ export class CreatePaymentController {
       payload: createPaymentDto,
       requesterId,
     });
-    return { data: res.data.toDTO(), message: 'Payment created' };
+    return res.toDTO();
   }
 }

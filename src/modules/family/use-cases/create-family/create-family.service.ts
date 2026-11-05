@@ -8,10 +8,7 @@ type Input = {
   requesterId: string;
 };
 
-type Output = {
-  data: FamilyDomain;
-  message: 'Success';
-};
+type Output = FamilyDomain;
 
 @Injectable()
 export class CreateFamilyService {
@@ -23,6 +20,6 @@ export class CreateFamilyService {
       users: { connect: { id: input.requesterId } },
     });
 
-    return { data: result, message: 'Success' };
+    return result;
   }
 }

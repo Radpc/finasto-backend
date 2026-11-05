@@ -22,6 +22,6 @@ export class GetUserByIdController {
       userId,
       requester: req.user,
     });
-    return { data: result.data.toDTO(), message: 'Success' };
+    return result.toDTO();
   }
 }

@@ -10,10 +10,7 @@ type Input = {
   payload: UpdateTimeBudgetDTO;
 };
 
-type Output = {
-  message: 'Success';
-  data: TimeBudgetDomain;
-};
+type Output = TimeBudgetDomain;
 
 @Injectable()
 export class UpdateTimeBudgetService {
@@ -44,6 +41,6 @@ export class UpdateTimeBudgetService {
     });
 
     if (!res) throw new NotFoundException();
-    return { data: res, message: 'Success' };
+    return res;
   }
 }

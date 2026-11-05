@@ -1,6 +1,8 @@
 import { RecurringPaymentDomain } from '../../domain/recurring-payment.domain';
 import { CreateRecurringPaymentDTO } from '../../dto/create-recurring-payment.dto';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { AppException } from 'src/common/errors/app.exception';
+import { ErrorCode } from 'src/common/errors/error-code';
 import { RecurringPaymentRepoService } from 'src/database/repositories/recurring-payment/recurring-payment-repo.service';
 import { Prisma } from '@prisma/client';
 import { PaymentStatus } from 'src/modules/payments/domain/payment.domain';
@@ -11,10 +13,7 @@ type Input = {
   payload: CreateRecurringPaymentDTO;
   requester: UserDTO;
 };
-type Output = {
-  data: RecurringPaymentDomain;
-  message: 'Succcess';
-};
+type Output = RecurringPaymentDomain;
 
 @Injectable()
 export class CreateRecurringPaymentService {
@@ -29,7 +28,13 @@ export class CreateRecurringPaymentService {
       ? DateTime.fromISO(payload.startDateFrom)
       : DateTime.now();
 
-    if (!startDate.isValid) throw new BadRequestException('Invalid date');
+    if (!startDate.isValid) {
+      throw new AppException(
+        ErrorCode.InvalidDate,
+        HttpStatus.BAD_REQUEST,
+        'Invalid date',
+      );
+    }
 
     const currentDay = startDate.day;
 
@@ -137,6 +142,6 @@ export class CreateRecurringPaymentService {
         payments: { createMany: { data: payments } },
       });
 
-    return { data: result, message: 'Succcess' };
+    return result;
   }
 }

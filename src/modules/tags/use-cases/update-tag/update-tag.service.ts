@@ -4,10 +4,7 @@ import { TagDomain } from '../../domain/tag.domain';
 import { TagRepoService } from 'src/database/repositories/tag/tag-repo.service';
 
 type Input = { tagId: string; updateTagDTO: UpdateTagDTO; requesterId: string };
-type Output = {
-  data: TagDomain;
-  message: 'Success';
-};
+type Output = TagDomain;
 
 @Injectable()
 export class UpdateTagService {
@@ -22,6 +19,6 @@ export class UpdateTagService {
       data: { label: input.updateTagDTO.label },
     });
 
-    return { data: result, message: 'Success' };
+    return result;
   }
 }

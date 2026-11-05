@@ -22,6 +22,6 @@ export class GetTagByIdController {
       tagId,
       requesterId: req.user.id,
     });
-    return { data: result.data.toDTO(), message: 'Success' };
+    return result.toDTO();
   }
 }

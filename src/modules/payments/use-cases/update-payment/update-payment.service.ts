@@ -9,10 +9,7 @@ type Input = {
   payload: UpdatePaymentDTO;
   requester: UserDTO;
 };
-type Output = {
-  data: PaymentDomain;
-  message: 'Success';
-};
+type Output = PaymentDomain;
 
 @Injectable()
 export class UpdatePaymentService {
@@ -52,9 +49,6 @@ export class UpdatePaymentService {
       },
     });
 
-    return {
-      data: res,
-      message: 'Success',
-    };
+    return res;
   }
 }

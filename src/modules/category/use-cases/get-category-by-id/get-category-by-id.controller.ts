@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  NotFoundException,
-  Param,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { GetCategoryByIdService } from './get-category-by-id.service';
 import { ApiKeyAndJwtGuard } from 'src/modules/jwt/guards/shared.guard';
@@ -20,13 +13,11 @@ export class GetCategoryByIdController {
   @ApiBearerAuth()
   @Get(':id')
   async handle(@Param('id') id: string, @Req() req: AuthorizedRequest) {
-    const { data: category } = await this.getCategory.execute({
+    const category = await this.getCategory.execute({
       categoryId: id,
       requesterId: req.user.id,
     });
 
-    if (!category) throw new NotFoundException('Category not found');
-
-    return { data: category.toDTO() };
+    return category.toDTO();
   }
 }
