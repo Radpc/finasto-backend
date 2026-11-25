@@ -18,7 +18,8 @@ cp .env.example .env
 # 3. Install, create the schema and load demo data
 npm ci
 npx prisma migrate deploy
-npx prisma db seed          # demo login: admin@email.com / 12345 (local only)
+npx prisma db seed          # demo family with accounts, categories, tags and payments
+                            # login: admin@email.com / 12345 (local only)
 
 # 4. Start in watch mode
 npm run start:dev
